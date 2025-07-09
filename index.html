@@ -212,13 +212,23 @@
     <script type="module">
         // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, addDoc, getDocs, onSnapshot, setDoc, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- DO NOT EDIT ---
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEMO_API_KEY", authDomain: "DEMO_AUTH_DOMAIN", projectId: "DEMO_PROJECT_ID" };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'madrasa-attendance-app-bn';
-        // --- END DO NOT EDIT ---
+        // --- Firebase Configuration ---
+        // আপনার দেওয়া Firebase প্রজেক্টের কনফিগারেশন
+        const firebaseConfig = {
+            apiKey: "AIzaSyBnmp7BXLoQcHmZJSTXQiVXYG0_i9zTdDc",
+            authDomain: "hems-jamia.firebaseapp.com",
+            projectId: "hems-jamia",
+            storageBucket: "hems-jamia.appspot.com",
+            messagingSenderId: "819110765959",
+            appId: "1:819110765959:web:e58deea94b34a6fca71f22",
+            measurementId: "G-C25W3QEDC9"
+        };
+        
+        // ডাটাবেসের পাথ ঠিক রাখার জন্য প্রজেক্ট আইডি ব্যবহার করা হচ্ছে
+        const firestoreAppId = firebaseConfig.projectId;
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -265,21 +275,18 @@
         let unsubscribeStudents = null;
 
         // --- Authentication ---
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             if (user) {
+                // ব্যবহারকারী লগইন করেছেন
                 userId = user.uid;
+                console.log("Anonymous user signed in with UID:", userId);
                 initializeAppLogic();
             } else {
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (error) {
-                    console.error("Authentication failed:", error);
-                    showToast("সিস্টেম চালু করা সম্ভব হচ্ছে না।", true);
-                }
+                // কোনো ব্যবহারকারী লগইন করা নেই, তাই বেনামে সাইন ইন করুন
+                signInAnonymously(auth).catch((error) => {
+                    console.error("Anonymous sign-in failed:", error);
+                    showToast("সিস্টেম চালু করতে সমস্যা হচ্ছে।", true);
+                });
             }
         });
 
@@ -345,7 +352,7 @@
                 return;
             }
 
-            const classCollectionRef = collection(db, `artifacts/${appId}/public/data/classes`);
+            const classCollectionRef = collection(db, `artifacts/${firestoreAppId}/public/data/classes`);
             const q = query(classCollectionRef, where("name", "==", name));
             const querySnapshot = await getDocs(q);
 
@@ -368,7 +375,7 @@
 
         function loadClasses() {
             if (unsubscribeClasses) unsubscribeClasses();
-            const classCollectionRef = collection(db, `artifacts/${appId}/public/data/classes`);
+            const classCollectionRef = collection(db, `artifacts/${firestoreAppId}/public/data/classes`);
             
             unsubscribeClasses = onSnapshot(classCollectionRef, (snapshot) => {
                 const classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -415,7 +422,7 @@
         }
         
         async function toggleJamaatStatus(classId, currentStatus) {
-            const classDocRef = doc(db, `artifacts/${appId}/public/data/classes`, classId);
+            const classDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/classes`, classId);
             try {
                 await updateDoc(classDocRef, {
                     isActive: !currentStatus
@@ -430,7 +437,7 @@
         async function deleteClass(classId) {
             if (!window.confirm("আপনি কি নিশ্চিতভাবে এই জামাতটি মুছে ফেলতে চান?")) return;
             try {
-                await deleteDoc(doc(db, `artifacts/${appId}/public/data/classes`, classId));
+                await deleteDoc(doc(db, `artifacts/${firestoreAppId}/public/data/classes`, classId));
                 showToast("জামাত মুছে ফেলা হয়েছে।");
             } catch (error) {
                 console.error("Error deleting class:", error);
@@ -467,7 +474,7 @@
             }
 
             try {
-                const studentCollection = collection(db, `artifacts/${appId}/public/data/students`);
+                const studentCollection = collection(db, `artifacts/${firestoreAppId}/public/data/students`);
                 await addDoc(studentCollection, {
                     classId,
                     name,
@@ -490,7 +497,7 @@
             }
             
             studentListDiv.innerHTML = '<p class="text-gray-500">লোড হচ্ছে...</p>';
-            const studentCollection = collection(db, `artifacts/${appId}/public/data/students`);
+            const studentCollection = collection(db, `artifacts/${firestoreAppId}/public/data/students`);
             const q = query(studentCollection, where("classId", "==", classId));
 
             unsubscribeStudents = onSnapshot(q, (snapshot) => {
@@ -524,7 +531,7 @@
         async function deleteStudent(studentId) {
             if (!window.confirm("আপনি কি নিশ্চিতভাবে এই ছাত্রকে মুছে ফেলতে চান?")) return;
             try {
-                await deleteDoc(doc(db, `artifacts/${appId}/public/data/students`, studentId));
+                await deleteDoc(doc(db, `artifacts/${firestoreAppId}/public/data/students`, studentId));
                 showToast("ছাত্রকে মুছে ফেলা হয়েছে।");
             } catch (error) {
                 console.error("Error deleting student:", error);
@@ -546,7 +553,7 @@
             
             attendanceSheetDiv.innerHTML = '<p class="text-gray-500">ছাত্রদের তালিকা লোড হচ্ছে...</p>';
 
-            const studentCollection = collection(db, `artifacts/${appId}/public/data/students`);
+            const studentCollection = collection(db, `artifacts/${firestoreAppId}/public/data/students`);
             const studentQuery = query(studentCollection, where("classId", "==", classId));
             const studentSnapshot = await getDocs(studentQuery);
             const students = studentSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -557,7 +564,7 @@
                 return;
             }
 
-            const attendanceCollection = collection(db, `artifacts/${appId}/public/data/attendance`);
+            const attendanceCollection = collection(db, `artifacts/${firestoreAppId}/public/data/attendance`);
             const attendanceQuery = query(attendanceCollection, 
                 where("classId", "==", classId),
                 where("date", "==", date),
@@ -653,7 +660,7 @@
             const attendanceDocId = `${date}_${academicYear}_${exam}_${classId}_${studentId}`;
 
             try {
-                const attendanceDocRef = doc(db, `artifacts/${appId}/public/data/attendance`, attendanceDocId);
+                const attendanceDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/attendance`, attendanceDocId);
                 await setDoc(attendanceDocRef, {
                     studentId, classId, academicYear, exam, date, status
                 });
