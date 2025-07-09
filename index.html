@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasania Exam Management System (HEMS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- PDF ডাউনলোড করার জন্য লাইব্রেরি -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .tab-button.active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .attendance-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .present {
+            background-color: #22c55e;
+            color: white;
+            border: 2px solid #16a34a;
+        }
+        .absent {
+            background-color: #ef4444;
+            color: white;
+            border: 2px solid #dc2626;
+        }
+        .not-marked {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        .view {
+            display: none;
+        }
+        .view.active {
+            display: block;
+        }
+        .toggle-status-btn.active svg {
+            color: #22c55e; /* Green for active */
+        }
+        .toggle-status-btn.inactive svg {
+            color: #9ca3af; /* Gray for inactive */
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* প্রিন্ট করার সময় বাটন অদৃশ্য করার জন্য */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Main Container -->
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <!-- Header -->
+        <header class="bg-white shadow-md rounded-lg p-6 mb-8 text-center">
+            <h1 class="text-2xl md:text-4xl font-bold text-blue-600">Hasania Exam Management System (HEMS)</h1>
+            <p class="text-gray-600 mt-2">একটি ডিজিটাল হাজিরা ও পরীক্ষা ব্যবস্থাপনা সিস্টেম</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="mb-8 bg-white p-2 rounded-lg shadow-sm flex flex-wrap justify-center gap-2">
+            <button id="tab-attendance" class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">হাজিরা গ্রহণ</button>
+            <button id="tab-students" class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">ছাত্র ব্যবস্থাপনা</button>
+            <button id="tab-classes" class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">জামাত ব্যবস্থাপনা</button>
+        </div>
+
+        <!-- Views Container -->
+        <main>
+            <!-- Attendance View -->
+            <div id="view-attendance" class="view active">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">হাজিরা খাতা</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                        <div>
+                            <label for="academicYearSelect" class="block mb-2 font-semibold text-gray-600">শিক্ষাবর্ষ</label>
+                            <select id="academicYearSelect" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"></select>
+                        </div>
+                        <div>
+                            <label for="examSelect" class="block mb-2 font-semibold text-gray-600">পরীক্ষা</label>
+                            <select id="examSelect" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                                <option value="প্রথম সাময়িক">প্রথম সাময়িক</option>
+                                <option value="দ্বিতীয় সাময়িক">দ্বিতীয় সাময়িক</option>
+                                <option value="বার্ষিক">বার্ষিক</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="classSelectForAttendance" class="block mb-2 font-semibold text-gray-600">জামাত</label>
+                            <select id="classSelectForAttendance" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                                <option>প্রথমে জামাত যোগ করুন</option>
+                            </select>
+                        </div>
+                        <button id="openAttendanceSheetBtn" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-sm">হাজিরা খাতা খুলুন</button>
+                    </div>
+                    <div id="attendanceSheet" class="mt-8"></div>
+                </div>
+            </div>
+
+            <!-- Students View -->
+            <div id="view-students" class="view">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">নতুন ছাত্র যোগ করুন</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="classSelectForStudent" class="block mb-2 font-semibold text-gray-600">জামাত</label>
+                                    <select id="classSelectForStudent" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                                        <option>প্রথমে জামাত যোগ করুন</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="studentName" class="block mb-2 font-semibold text-gray-600">ছাত্রের নাম</label>
+                                    <input type="text" id="studentName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="ছাত্রের পুরো নাম">
+                                </div>
+                                <div>
+                                    <label for="studentRoll" class="block mb-2 font-semibold text-gray-600">রোল নম্বর</label>
+                                    <input type="number" id="studentRoll" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="রোল নম্বর দিন">
+                                </div>
+                                <button id="addStudentBtn" class="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-300 shadow-sm">ছাত্র যোগ করুন</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">ছাত্রদের তালিকা</h2>
+                            <div id="studentList" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                                <p class="text-gray-500">তালিকা দেখতে প্রথমে একটি জামাত নির্বাচন করুন।</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classes View -->
+            <div id="view-classes" class="view">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">নতুন জামাত যোগ করুন</h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="classNameSelect" class="block mb-2 font-semibold text-gray-600">জামাতের নাম নির্বাচন করুন</label>
+                                    <select id="classNameSelect" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                                        <option value="তাকমিল">তাকমিল</option>
+                                        <option value="ফযিলত">ফযিলত</option>
+                                        <option value="জালালাইন">জালালাইন</option>
+                                        <option value="শরহে বেকায়া">শরহে বেকায়া</option>
+                                        <option value="কাফিয়া">কাফিয়া</option>
+                                        <option value="হিদায়াতুন্নাহু">হিদায়াতুন্নাহু</option>
+                                        <option value="নাহবেমীর">নাহবেমীর</option>
+                                        <option value="মিঝান">মিঝান</option>
+                                        <option value="দহম">দহম</option>
+                                        <option value="ইয়াজ দহম">ইয়াজ দহম</option>
+                                    </select>
+                                </div>
+                                <button id="addClassBtn" class="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-300 shadow-sm">নির্বাচিত জামাত যোগ করুন</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">আপনার মাদ্রাসার জামাতসমূহ</h2>
+                            <div id="classList" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                                <p class="text-gray-500">লোড হচ্ছে...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center p-6 mt-12 bg-white rounded-lg shadow-md">
+            <p class="text-gray-600 text-sm">
+                &copy; ২০২৫ রঘুনাথপুর হাসানিয়া কওমীয়া মাদরাসা ও এতিমখানা। সর্বস্বত্ব সংরক্ষিত।
+            </p>
+            <p class="text-gray-500 text-xs mt-2">
+                কারিগরি সহায়তায় - একটি ডিজিটাল উদ্যোগ
+            </p>
+        </footer>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white py-3 px-6 rounded-lg shadow-lg transition-transform duration-300 translate-y-20 opacity-0">
+            <p id="toast-message"></p>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, collection, addDoc, getDocs, onSnapshot, setDoc, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- DO NOT EDIT ---
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEMO_API_KEY", authDomain: "DEMO_AUTH_DOMAIN", projectId: "DEMO_PROJECT_ID" };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'madrasa-attendance-app-bn';
+        // --- END DO NOT EDIT ---
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const tabs = {
+            attendance: document.getElementById('tab-attendance'),
+            students: document.getElementById('tab-students'),
+            classes: document.getElementById('tab-classes'),
+        };
+        const views = {
+            attendance: document.getElementById('view-attendance'),
+            students: document.getElementById('view-students'),
+            classes: document.getElementById('view-classes'),
+        };
+
+        // Class Management
+        const classNameSelect = document.getElementById('classNameSelect');
+        const addClassBtn = document.getElementById('addClassBtn');
+        const classListDiv = document.getElementById('classList');
+
+        // Student Management
+        const classSelectForStudent = document.getElementById('classSelectForStudent');
+        const studentNameInput = document.getElementById('studentName');
+        const studentRollInput = document.getElementById('studentRoll');
+        const addStudentBtn = document.getElementById('addStudentBtn');
+        const studentListDiv = document.getElementById('studentList');
+
+        // Attendance Management
+        const academicYearSelect = document.getElementById('academicYearSelect');
+        const examSelect = document.getElementById('examSelect');
+        const classSelectForAttendance = document.getElementById('classSelectForAttendance');
+        const openAttendanceSheetBtn = document.getElementById('openAttendanceSheetBtn');
+        const attendanceSheetDiv = document.getElementById('attendanceSheet');
+        
+        // Toast Notification
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        let userId = null;
+        let unsubscribeClasses = null;
+        let unsubscribeStudents = null;
+
+        // --- Authentication ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                initializeAppLogic();
+            } else {
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Authentication failed:", error);
+                    showToast("সিস্টেম চালু করা সম্ভব হচ্ছে না।", true);
+                }
+            }
+        });
+
+        // --- App Initialization ---
+        function initializeAppLogic() {
+            if (!userId) return;
+            setupEventListeners();
+            populateAcademicYears();
+            switchView('attendance');
+            loadClasses();
+        }
+
+        // --- Toast Notification Logic ---
+        function showToast(message, isError = false) {
+            toastMessage.textContent = message;
+            toast.className = `fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg transition-transform duration-300 translate-y-0 opacity-100 ${isError ? 'bg-red-600' : 'bg-gray-800'}`;
+            setTimeout(() => {
+                toast.className = toast.className.replace('translate-y-0 opacity-100', 'translate-y-20 opacity-0');
+            }, 3000);
+        }
+        
+        // --- Academic Year Population ---
+        function populateAcademicYears() {
+            const currentHijriYear = 1446;
+            let options = '';
+            const toBengali = n => n.toString().replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+
+            for (let i = 0; i < 15; i++) {
+                const startYear = currentHijriYear + i;
+                const endYear = startYear + 1;
+                const yearText = `${toBengali(startYear)}-${toBengali(endYear)} হিজরী`;
+                const yearValue = `${startYear}-${endYear}`;
+                options += `<option value="${yearValue}">${yearText}</option>`;
+            }
+            academicYearSelect.innerHTML = options;
+        }
+
+        // --- View Switching Logic ---
+        function switchView(viewName) {
+            Object.values(views).forEach(view => view.classList.remove('active'));
+            Object.values(tabs).forEach(tab => tab.classList.remove('active'));
+            views[viewName].classList.add('active');
+            tabs[viewName].classList.add('active');
+        }
+
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            Object.keys(tabs).forEach(tabName => {
+                tabs[tabName].addEventListener('click', () => switchView(tabName));
+            });
+
+            addClassBtn.addEventListener('click', addClass);
+            addStudentBtn.addEventListener('click', addStudent);
+            classSelectForStudent.addEventListener('change', (e) => loadStudents(e.target.value));
+            openAttendanceSheetBtn.addEventListener('click', renderAttendanceSheet);
+        }
+
+        // --- Class (Jamaat) Management Functions ---
+        async function addClass() {
+            const name = classNameSelect.value;
+            if (!name) {
+                showToast("প্রথমে একটি জামাত নির্বাচন করুন।", true);
+                return;
+            }
+
+            const classCollectionRef = collection(db, `artifacts/${appId}/public/data/classes`);
+            const q = query(classCollectionRef, where("name", "==", name));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                showToast("এই জামাতটি ইতিমধ্যে যোগ করা আছে।", true);
+                return;
+            }
+
+            try {
+                await addDoc(classCollectionRef, { 
+                    name,
+                    isActive: true // ডিফল্ট হিসেবে জামাত সক্রিয় থাকবে
+                });
+                showToast("জামাত সফলভাবে যোগ করা হয়েছে।");
+            } catch (error) {
+                console.error("Error adding class: ", error);
+                showToast("জামাত যোগ করতে সমস্যা হয়েছে।", true);
+            }
+        }
+
+        function loadClasses() {
+            if (unsubscribeClasses) unsubscribeClasses();
+            const classCollectionRef = collection(db, `artifacts/${appId}/public/data/classes`);
+            
+            unsubscribeClasses = onSnapshot(classCollectionRef, (snapshot) => {
+                const classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                classListDiv.innerHTML = classes.length ? '' : '<p class="text-gray-500">কোনো জামাত যোগ করা হয়নি।</p>';
+                classes.forEach(cls => {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center bg-gray-100 p-3 rounded-lg';
+                    const statusClass = cls.isActive ? 'active' : 'inactive';
+                    const statusTitle = cls.isActive ? 'জামাতটি সক্রিয় আছে' : 'জামাতটি নিষ্ক্রিয় আছে';
+                    div.innerHTML = `
+                        <span class="font-semibold">${cls.name}</span>
+                        <div class="flex items-center gap-4">
+                            <button data-id="${cls.id}" data-status="${cls.isActive}" title="${statusTitle}" class="toggle-status-btn ${statusClass}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                            <button data-id="${cls.id}" class="delete-class-btn text-red-500 hover:text-red-700 font-bold">মুছুন</button>
+                        </div>
+                    `;
+                    classListDiv.appendChild(div);
+                });
+
+                updateClassDropdowns(classes);
+                
+                document.querySelectorAll('.delete-class-btn').forEach(button => {
+                    button.addEventListener('click', (e) => deleteClass(e.target.dataset.id));
+                });
+                
+                document.querySelectorAll('.toggle-status-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        const currentStatus = e.currentTarget.dataset.status === 'true';
+                        toggleJamaatStatus(id, currentStatus);
+                    });
+                });
+
+            }, (error) => {
+                console.error("Error loading classes:", error);
+                classListDiv.innerHTML = '<p class="text-red-500">জামাত লোড করতে সমস্যা হয়েছে।</p>';
+            });
+        }
+        
+        async function toggleJamaatStatus(classId, currentStatus) {
+            const classDocRef = doc(db, `artifacts/${appId}/public/data/classes`, classId);
+            try {
+                await updateDoc(classDocRef, {
+                    isActive: !currentStatus
+                });
+                showToast(`জামাত ${!currentStatus ? 'সক্রিয়' : 'নিষ্ক্রিয়'} করা হয়েছে।`);
+            } catch (error) {
+                console.error("Error updating status:", error);
+                showToast("স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে।", true);
+            }
+        }
+        
+        async function deleteClass(classId) {
+            if (!window.confirm("আপনি কি নিশ্চিতভাবে এই জামাতটি মুছে ফেলতে চান?")) return;
+            try {
+                await deleteDoc(doc(db, `artifacts/${appId}/public/data/classes`, classId));
+                showToast("জামাত মুছে ফেলা হয়েছে।");
+            } catch (error) {
+                console.error("Error deleting class:", error);
+                showToast("জামাত মুছতে সমস্যা হয়েছে।", true);
+            }
+        }
+
+        function updateClassDropdowns(classes) {
+            const activeClasses = classes.filter(cls => cls.isActive);
+            
+            const optionsHtml = activeClasses.length 
+                ? activeClasses.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('')
+                : '<option value="">কোনো সক্রিয় জামাত নেই</option>';
+            
+            classSelectForStudent.innerHTML = optionsHtml;
+            classSelectForAttendance.innerHTML = optionsHtml;
+            
+            if (activeClasses.length) {
+                loadStudents(classSelectForStudent.value);
+            } else {
+                studentListDiv.innerHTML = '<p class="text-gray-500">ছাত্র যোগ করার জন্য প্রথমে একটি জামাত সক্রিয় করুন।</p>';
+            }
+        }
+
+        // --- Student Management Functions ---
+        async function addStudent() {
+            const classId = classSelectForStudent.value;
+            const name = studentNameInput.value.trim();
+            const roll = studentRollInput.value.trim();
+
+            if (!classId || !name || !roll) {
+                showToast("অনুগ্রহ করে সকল তথ্য পূরণ করুন।", true);
+                return;
+            }
+
+            try {
+                const studentCollection = collection(db, `artifacts/${appId}/public/data/students`);
+                await addDoc(studentCollection, {
+                    classId,
+                    name,
+                    roll: parseInt(roll, 10)
+                });
+                showToast("ছাত্র সফলভাবে যোগ করা হয়েছে।");
+                studentNameInput.value = '';
+                studentRollInput.value = '';
+            } catch (error) {
+                console.error("Error adding student: ", error);
+                showToast("ছাত্র যোগ করতে সমস্যা হয়েছে।", true);
+            }
+        }
+
+        function loadStudents(classId) {
+            if (unsubscribeStudents) unsubscribeStudents();
+            if (!classId) {
+                studentListDiv.innerHTML = '<p class="text-gray-500">তালিকা দেখতে প্রথমে একটি জামাত নির্বাচন করুন।</p>';
+                return;
+            }
+            
+            studentListDiv.innerHTML = '<p class="text-gray-500">লোড হচ্ছে...</p>';
+            const studentCollection = collection(db, `artifacts/${appId}/public/data/students`);
+            const q = query(studentCollection, where("classId", "==", classId));
+
+            unsubscribeStudents = onSnapshot(q, (snapshot) => {
+                const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                students.sort((a, b) => a.roll - b.roll);
+                
+                studentListDiv.innerHTML = students.length ? '' : '<p class="text-gray-500">এই জামাতে কোনো ছাত্র পাওয়া যায়নি।</p>';
+                students.forEach(std => {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center bg-gray-100 p-3 rounded-lg';
+                    div.innerHTML = `
+                        <div>
+                            <span class="font-bold text-lg">${std.roll}.</span>
+                            <span class="font-semibold ml-2">${std.name}</span>
+                        </div>
+                        <button data-id="${std.id}" class="delete-student-btn text-red-500 hover:text-red-700 font-bold">মুছুন</button>
+                    `;
+                    studentListDiv.appendChild(div);
+                });
+                
+                document.querySelectorAll('.delete-student-btn').forEach(button => {
+                    button.addEventListener('click', (e) => deleteStudent(e.target.dataset.id));
+                });
+
+            }, (error) => {
+                console.error("Error loading students:", error);
+                studentListDiv.innerHTML = '<p class="text-red-500">ছাত্রদের তালিকা লোড করতে সমস্যা হয়েছে।</p>';
+            });
+        }
+        
+        async function deleteStudent(studentId) {
+            if (!window.confirm("আপনি কি নিশ্চিতভাবে এই ছাত্রকে মুছে ফেলতে চান?")) return;
+            try {
+                await deleteDoc(doc(db, `artifacts/${appId}/public/data/students`, studentId));
+                showToast("ছাত্রকে মুছে ফেলা হয়েছে।");
+            } catch (error) {
+                console.error("Error deleting student:", error);
+                showToast("ছাত্রকে মুছতে সমস্যা হয়েছে।", true);
+            }
+        }
+
+        // --- Attendance & PDF Functions ---
+        async function renderAttendanceSheet() {
+            const classId = classSelectForAttendance.value;
+            const academicYear = academicYearSelect.value;
+            const exam = examSelect.value;
+            const date = new Date().toISOString().split('T')[0];
+
+            if (!classId) {
+                showToast("অনুগ্রহ করে একটি সক্রিয় জামাত নির্বাচন করুন।", true);
+                return;
+            }
+            
+            attendanceSheetDiv.innerHTML = '<p class="text-gray-500">ছাত্রদের তালিকা লোড হচ্ছে...</p>';
+
+            const studentCollection = collection(db, `artifacts/${appId}/public/data/students`);
+            const studentQuery = query(studentCollection, where("classId", "==", classId));
+            const studentSnapshot = await getDocs(studentQuery);
+            const students = studentSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            students.sort((a, b) => a.roll - b.roll);
+            
+            if (students.length === 0) {
+                attendanceSheetDiv.innerHTML = '<p class="text-center text-red-500 font-semibold">এই জামাতে কোনো ছাত্র পাওয়া যায়নি।</p>';
+                return;
+            }
+
+            const attendanceCollection = collection(db, `artifacts/${appId}/public/data/attendance`);
+            const attendanceQuery = query(attendanceCollection, 
+                where("classId", "==", classId),
+                where("date", "==", date),
+                where("exam", "==", exam),
+                where("academicYear", "==", academicYear)
+            );
+            const attendanceSnapshot = await getDocs(attendanceQuery);
+            const attendanceRecords = {};
+            attendanceSnapshot.forEach(doc => {
+                const data = doc.data();
+                attendanceRecords[data.studentId] = data.status;
+            });
+
+            const selectedClass = classSelectForAttendance.options[classSelectForAttendance.selectedIndex].text;
+
+            attendanceSheetDiv.innerHTML = `
+                <div id="pdf-content">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold">হাজিরা রিপোর্ট</h3>
+                            <p class="text-gray-600"><strong>জামাত:</strong> ${selectedClass}</p>
+                            <p class="text-gray-600"><strong>পরীক্ষা:</strong> ${exam}</p>
+                            <p class="text-gray-600"><strong>শিক্ষাবর্ষ:</strong> ${academicYearSelect.options[academicYearSelect.selectedIndex].text}</p>
+                            <p class="text-gray-600"><strong>তারিখ:</strong> ${new Date(date).toLocaleDateString('bn-BD')}</p>
+                        </div>
+                        <button id="downloadPdfBtn" class="no-print bg-rose-600 text-white p-3 rounded-lg font-semibold hover:bg-rose-700 transition-colors duration-300 shadow-sm">PDF ডাউনলোড করুন</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        ${students.map(student => {
+                            const status = attendanceRecords[student.id];
+                            const presentClass = status === 'present' ? 'present' : 'not-marked';
+                            const absentClass = status === 'absent' ? 'absent' : 'not-marked';
+                            return `
+                            <div class="p-4 rounded-lg shadow-md bg-gray-50 text-center">
+                                <p class="font-bold text-lg">${student.name}</p>
+                                <p class="text-gray-600 mb-3">রোল: ${student.roll}</p>
+                                <div class="flex justify-center gap-2 no-print">
+                                    <button data-studentid="${student.id}" data-status="present" class="attendance-btn flex-1 py-2 rounded-md font-semibold ${presentClass}">উপস্থিত</button>
+                                    <button data-studentid="${student.id}" data-status="absent" class="attendance-btn flex-1 py-2 rounded-md font-semibold ${absentClass}">অনুপস্থিত</button>
+                                </div>
+                                <div class="print-only hidden pt-2 font-semibold text-lg">
+                                    ${status === 'present' ? '<span class="text-green-600">উপস্থিত</span>' : status === 'absent' ? '<span class="text-red-600">অনুপস্থিত</span>' : '<span class="text-gray-500">অচিহ্নিত</span>'}
+                                </div>
+                            </div>
+                            `
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('downloadPdfBtn').addEventListener('click', downloadAsPDF);
+            document.querySelectorAll('.attendance-btn').forEach(button => {
+                button.addEventListener('click', handleAttendanceMarking);
+            });
+        }
+        
+        function downloadAsPDF() {
+            showToast("PDF তৈরি হচ্ছে...");
+            const element = document.getElementById('pdf-content');
+            const academicYear = academicYearSelect.options[academicYearSelect.selectedIndex].text;
+            const exam = examSelect.value;
+            const selectedClass = classSelectForAttendance.options[classSelectForAttendance.selectedIndex].text;
+            const filename = `Hajira-Report_${selectedClass}_${exam}_${academicYear}.pdf`;
+
+            const opt = {
+                margin:       0.5,
+                filename:     filename,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            element.querySelectorAll('.print-only').forEach(el => el.style.display = 'block');
+            element.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+
+            html2pdf().from(element).set(opt).save().then(() => {
+                element.querySelectorAll('.print-only').forEach(el => el.style.display = 'none');
+                element.querySelectorAll('.no-print').forEach(el => el.style.display = 'flex');
+            });
+        }
+
+
+        async function handleAttendanceMarking(event) {
+            const button = event.currentTarget;
+            const studentId = button.dataset.studentid;
+            const status = button.dataset.status;
+
+            const classId = classSelectForAttendance.value;
+            const academicYear = academicYearSelect.value;
+            const exam = examSelect.value;
+            const date = new Date().toISOString().split('T')[0];
+
+            const attendanceDocId = `${date}_${academicYear}_${exam}_${classId}_${studentId}`;
+
+            try {
+                const attendanceDocRef = doc(db, `artifacts/${appId}/public/data/attendance`, attendanceDocId);
+                await setDoc(attendanceDocRef, {
+                    studentId, classId, academicYear, exam, date, status
+                });
+                
+                const parent = button.parentElement.parentElement;
+                const statusDiv = parent.querySelector('.print-only');
+                
+                parent.querySelectorAll('.attendance-btn').forEach(btn => {
+                    btn.classList.remove('present', 'absent');
+                    btn.classList.add('not-marked');
+                });
+                button.classList.remove('not-marked');
+                button.classList.add(status === 'present' ? 'present' : 'absent');
+
+                if (status === 'present') {
+                    statusDiv.innerHTML = '<span class="text-green-600">উপস্থিত</span>';
+                } else {
+                     statusDiv.innerHTML = '<span class="text-red-600">অনুপস্থিত</span>';
+                }
+
+                showToast("হাজিরা আপডেট হয়েছে।");
+
+            } catch (error) {
+                console.error("Error saving attendance: ", error);
+                showToast("হাজিরা সংরক্ষণ করতে সমস্যা হয়েছে।", true);
+            }
+        }
+
+    </script>
+</body>
+</html>
