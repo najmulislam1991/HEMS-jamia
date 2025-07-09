@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hasania Exam Management System (HEMS)</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%233b82f6'/><text x='50' y='50' font-size='70' font-weight='bold' fill='white' text-anchor='middle' dy='.3em'>H</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- PDF ডাউনলোড করার জন্য লাইব্রেরি -->
+    <!-- PDF & Excel Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: 'Hind Siliguri', sans-serif;
@@ -42,12 +45,11 @@
             display: block;
         }
         .toggle-status-btn.active svg {
-            color: #22c55e; /* Green for active */
+            color: #22c55e;
         }
         .toggle-status-btn.inactive svg {
-            color: #9ca3af; /* Gray for inactive */
+            color: #9ca3af;
         }
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -61,7 +63,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        /* প্রিন্ট করার সময় বাটন অদৃশ্য করার জন্য */
         @media print {
             .no-print {
                 display: none !important;
@@ -124,28 +125,75 @@
                     <div class="lg:col-span-1">
                         <div class="bg-white p-6 rounded-lg shadow-md">
                             <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">নতুন ছাত্র যোগ করুন</h2>
-                            <div class="space-y-4">
+                            <form id="addStudentForm" class="space-y-4">
                                 <div>
                                     <label for="classSelectForStudent" class="block mb-2 font-semibold text-gray-600">জামাত</label>
                                     <select id="classSelectForStudent" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
                                         <option>প্রথমে জামাত যোগ করুন</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label for="studentName" class="block mb-2 font-semibold text-gray-600">ছাত্রের নাম</label>
-                                    <input type="text" id="studentName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="ছাত্রের পুরো নাম">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="studentName" class="block mb-2 font-semibold text-gray-600">ছাত্রের নাম</label>
+                                        <input type="text" id="studentName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                    </div>
+                                    <div>
+                                        <label for="studentRoll" class="block mb-2 font-semibold text-gray-600">রোল নম্বর</label>
+                                        <input type="number" id="studentRoll" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="fatherName" class="block mb-2 font-semibold text-gray-600">পিতার নাম</label>
+                                        <input type="text" id="fatherName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="motherName" class="block mb-2 font-semibold text-gray-600">মাতার নাম</label>
+                                        <input type="text" id="motherName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="guardianName" class="block mb-2 font-semibold text-gray-600">অভিভাবক</label>
+                                        <input type="text" id="guardianName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="guardianRelation" class="block mb-2 font-semibold text-gray-600">সম্পর্ক</label>
+                                        <input type="text" id="guardianRelation" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    </div>
                                 </div>
                                 <div>
-                                    <label for="studentRoll" class="block mb-2 font-semibold text-gray-600">রোল নম্বর</label>
-                                    <input type="number" id="studentRoll" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="রোল নম্বর দিন">
+                                    <label for="village" class="block mb-2 font-semibold text-gray-600">গ্রাম</label>
+                                    <input type="text" id="village" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
                                 </div>
-                                <button id="addStudentBtn" class="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-300 shadow-sm">ছাত্র যোগ করুন</button>
-                            </div>
+                                <div>
+                                    <label for="postOffice" class="block mb-2 font-semibold text-gray-600">ডাকঘর/ইউনিয়ন</label>
+                                    <input type="text" id="postOffice" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="thana" class="block mb-2 font-semibold text-gray-600">থানা</label>
+                                        <input type="text" id="thana" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="district" class="block mb-2 font-semibold text-gray-600">জেলা</label>
+                                        <input type="text" id="district" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="mobile" class="block mb-2 font-semibold text-gray-600">মোবাইল নং</label>
+                                    <input type="tel" id="mobile" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <button type="submit" id="addStudentBtn" class="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-300 shadow-sm">ছাত্র যোগ করুন</button>
+                            </form>
                         </div>
                     </div>
                     <div class="lg:col-span-2">
                         <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">ছাত্রদের তালিকা</h2>
+                            <div class="flex justify-between items-center border-b pb-3 mb-6">
+                                <h2 class="text-2xl font-bold text-gray-700">ছাত্রদের তালিকা</h2>
+                                <button id="downloadExcelBtn" class="bg-emerald-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-emerald-700 transition-colors duration-300 shadow-sm">Excel ডাউনলোড</button>
+                            </div>
                             <div id="studentList" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
                                 <p class="text-gray-500">তালিকা দেখতে প্রথমে একটি জামাত নির্বাচন করুন।</p>
                             </div>
@@ -216,7 +264,6 @@
         import { getFirestore, doc, collection, addDoc, getDocs, onSnapshot, setDoc, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
-        // আপনার দেওয়া Firebase প্রজেক্টের কনফিগারেশন
         const firebaseConfig = {
             apiKey: "AIzaSyBnmp7BXLoQcHmZJSTXQiVXYG0_i9zTdDc",
             authDomain: "hems-jamia.firebaseapp.com",
@@ -227,7 +274,6 @@
             measurementId: "G-C25W3QEDC9"
         };
         
-        // ডাটাবেসের পাথ ঠিক রাখার জন্য প্রজেক্ট আইডি ব্যবহার করা হচ্ছে
         const firestoreAppId = firebaseConfig.projectId;
 
         // Initialize Firebase
@@ -253,11 +299,10 @@
         const classListDiv = document.getElementById('classList');
 
         // Student Management
+        const addStudentForm = document.getElementById('addStudentForm');
         const classSelectForStudent = document.getElementById('classSelectForStudent');
-        const studentNameInput = document.getElementById('studentName');
-        const studentRollInput = document.getElementById('studentRoll');
-        const addStudentBtn = document.getElementById('addStudentBtn');
         const studentListDiv = document.getElementById('studentList');
+        const downloadExcelBtn = document.getElementById('downloadExcelBtn');
 
         // Attendance Management
         const academicYearSelect = document.getElementById('academicYearSelect');
@@ -273,16 +318,19 @@
         let userId = null;
         let unsubscribeClasses = null;
         let unsubscribeStudents = null;
+        let currentStudentsData = []; // To store student data for Excel export
+
+        const jamaatOrder = [
+            "তাকমিল", "ফযিলত", "জালালাইন", "শরহে বেকায়া", "কাফিয়া",
+            "হিদায়াতুন্নাহু", "নাহবেমীর", "মিঝান", "দহম", "ইয়াজ দহম"
+        ];
 
         // --- Authentication ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // ব্যবহারকারী লগইন করেছেন
                 userId = user.uid;
-                console.log("Anonymous user signed in with UID:", userId);
                 initializeAppLogic();
             } else {
-                // কোনো ব্যবহারকারী লগইন করা নেই, তাই বেনামে সাইন ইন করুন
                 signInAnonymously(auth).catch((error) => {
                     console.error("Anonymous sign-in failed:", error);
                     showToast("সিস্টেম চালু করতে সমস্যা হচ্ছে।", true);
@@ -339,9 +387,10 @@
             });
 
             addClassBtn.addEventListener('click', addClass);
-            addStudentBtn.addEventListener('click', addStudent);
+            addStudentForm.addEventListener('submit', addStudent);
             classSelectForStudent.addEventListener('change', (e) => loadStudents(e.target.value));
             openAttendanceSheetBtn.addEventListener('click', renderAttendanceSheet);
+            downloadExcelBtn.addEventListener('click', downloadAsExcel);
         }
 
         // --- Class (Jamaat) Management Functions ---
@@ -364,7 +413,7 @@
             try {
                 await addDoc(classCollectionRef, { 
                     name,
-                    isActive: true // ডিফল্ট হিসেবে জামাত সক্রিয় থাকবে
+                    isActive: true 
                 });
                 showToast("জামাত সফলভাবে যোগ করা হয়েছে।");
             } catch (error) {
@@ -380,6 +429,12 @@
             unsubscribeClasses = onSnapshot(classCollectionRef, (snapshot) => {
                 const classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 
+                classes.sort((a, b) => {
+                    const indexA = jamaatOrder.indexOf(a.name);
+                    const indexB = jamaatOrder.indexOf(b.name);
+                    return indexA - indexB;
+                });
+
                 classListDiv.innerHTML = classes.length ? '' : '<p class="text-gray-500">কোনো জামাত যোগ করা হয়নি।</p>';
                 classes.forEach(cls => {
                     const div = document.createElement('div');
@@ -447,6 +502,11 @@
 
         function updateClassDropdowns(classes) {
             const activeClasses = classes.filter(cls => cls.isActive);
+            activeClasses.sort((a, b) => {
+                const indexA = jamaatOrder.indexOf(a.name);
+                const indexB = jamaatOrder.indexOf(b.name);
+                return indexA - indexB;
+            });
             
             const optionsHtml = activeClasses.length 
                 ? activeClasses.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('')
@@ -459,30 +519,45 @@
                 loadStudents(classSelectForStudent.value);
             } else {
                 studentListDiv.innerHTML = '<p class="text-gray-500">ছাত্র যোগ করার জন্য প্রথমে একটি জামাত সক্রিয় করুন।</p>';
+                currentStudentsData = [];
             }
         }
 
         // --- Student Management Functions ---
-        async function addStudent() {
+        async function addStudent(event) {
+            event.preventDefault();
             const classId = classSelectForStudent.value;
-            const name = studentNameInput.value.trim();
-            const roll = studentRollInput.value.trim();
+            
+            if (!classId) {
+                showToast("অনুগ্রহ করে একটি জামাত নির্বাচন করুন।", true);
+                return;
+            }
 
-            if (!classId || !name || !roll) {
-                showToast("অনুগ্রহ করে সকল তথ্য পূরণ করুন।", true);
+            const studentData = {
+                classId,
+                name: document.getElementById('studentName').value.trim(),
+                roll: parseInt(document.getElementById('studentRoll').value.trim(), 10),
+                fatherName: document.getElementById('fatherName').value.trim(),
+                motherName: document.getElementById('motherName').value.trim(),
+                guardianName: document.getElementById('guardianName').value.trim(),
+                guardianRelation: document.getElementById('guardianRelation').value.trim(),
+                village: document.getElementById('village').value.trim(),
+                postOffice: document.getElementById('postOffice').value.trim(),
+                thana: document.getElementById('thana').value.trim(),
+                district: document.getElementById('district').value.trim(),
+                mobile: document.getElementById('mobile').value.trim(),
+            };
+
+            if (!studentData.name || !studentData.roll) {
+                showToast("ছাত্রের নাম এবং রোল নম্বর আবশ্যক।", true);
                 return;
             }
 
             try {
                 const studentCollection = collection(db, `artifacts/${firestoreAppId}/public/data/students`);
-                await addDoc(studentCollection, {
-                    classId,
-                    name,
-                    roll: parseInt(roll, 10)
-                });
+                await addDoc(studentCollection, studentData);
                 showToast("ছাত্র সফলভাবে যোগ করা হয়েছে।");
-                studentNameInput.value = '';
-                studentRollInput.value = '';
+                addStudentForm.reset();
             } catch (error) {
                 console.error("Error adding student: ", error);
                 showToast("ছাত্র যোগ করতে সমস্যা হয়েছে।", true);
@@ -493,6 +568,7 @@
             if (unsubscribeStudents) unsubscribeStudents();
             if (!classId) {
                 studentListDiv.innerHTML = '<p class="text-gray-500">তালিকা দেখতে প্রথমে একটি জামাত নির্বাচন করুন।</p>';
+                currentStudentsData = [];
                 return;
             }
             
@@ -503,6 +579,7 @@
             unsubscribeStudents = onSnapshot(q, (snapshot) => {
                 const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 students.sort((a, b) => a.roll - b.roll);
+                currentStudentsData = students; // Store for Excel export
                 
                 studentListDiv.innerHTML = students.length ? '' : '<p class="text-gray-500">এই জামাতে কোনো ছাত্র পাওয়া যায়নি।</p>';
                 students.forEach(std => {
@@ -525,6 +602,7 @@
             }, (error) => {
                 console.error("Error loading students:", error);
                 studentListDiv.innerHTML = '<p class="text-red-500">ছাত্রদের তালিকা লোড করতে সমস্যা হয়েছে।</p>';
+                currentStudentsData = [];
             });
         }
         
@@ -538,6 +616,36 @@
                 showToast("ছাত্রকে মুছতে সমস্যা হয়েছে।", true);
             }
         }
+
+        function downloadAsExcel() {
+            if (currentStudentsData.length === 0) {
+                showToast("ডাউনলোড করার জন্য কোনো ছাত্র পাওয়া যায়নি।", true);
+                return;
+            }
+
+            const dataToExport = currentStudentsData.map(student => ({
+                'রোল': student.roll,
+                'নাম': student.name,
+                'পিতার নাম': student.fatherName,
+                'মাতার নাম': student.motherName,
+                'অভিভাবক': student.guardianName,
+                'সম্পর্ক': student.guardianRelation,
+                'গ্রাম': student.village,
+                'ডাকঘর/ইউনিয়ন': student.postOffice,
+                'থানা': student.thana,
+                'জেলা': student.district,
+                'মোবাইল নং': student.mobile,
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "ছাত্রদের তালিকা");
+
+            const selectedClassName = classSelectForStudent.options[classSelectForStudent.selectedIndex].text;
+            XLSX.writeFile(workbook, `${selectedClassName}_ছাত্রদের_তালিকা.xlsx`);
+            showToast("Excel ফাইল ডাউনলোড হচ্ছে...", false);
+        }
+
 
         // --- Attendance & PDF Functions ---
         async function renderAttendanceSheet() {
