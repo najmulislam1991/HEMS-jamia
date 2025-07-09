@@ -63,6 +63,9 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+        .modal-backdrop {
+            background-color: rgba(0,0,0,0.5);
+        }
         @media print {
             .no-print {
                 display: none !important;
@@ -250,6 +253,78 @@
             </p>
         </footer>
 
+        <!-- Edit Student Modal -->
+        <div id="editStudentModal" class="fixed inset-0 z-50 items-center justify-center hidden">
+            <div class="modal-backdrop fixed inset-0 bg-black opacity-50"></div>
+            <div class="bg-white rounded-lg shadow-xl m-4 sm:max-w-3xl sm:w-full z-50 overflow-y-auto" style="max-height: 90vh;">
+                <div class="p-6">
+                    <div class="flex justify-between items-center border-b pb-3 mb-6">
+                        <h2 class="text-2xl font-bold text-gray-700">ছাত্রের তথ্য সম্পাদনা করুন</h2>
+                        <button id="closeEditModalBtn" class="text-gray-500 hover:text-gray-800">&times;</button>
+                    </div>
+                    <form id="editStudentForm" class="space-y-4">
+                        <input type="hidden" id="editStudentId">
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="editStudentName" class="block mb-2 font-semibold text-gray-600">ছাত্রের নাম</label>
+                                <input type="text" id="editStudentName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <div>
+                                <label for="editStudentRoll" class="block mb-2 font-semibold text-gray-600">রোল নম্বর</label>
+                                <input type="number" id="editStudentRoll" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="editFatherName" class="block mb-2 font-semibold text-gray-600">পিতার নাম</label>
+                                <input type="text" id="editFatherName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="editMotherName" class="block mb-2 font-semibold text-gray-600">মাতার নাম</label>
+                                <input type="text" id="editMotherName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="editGuardianName" class="block mb-2 font-semibold text-gray-600">অভিভাবক</label>
+                                <input type="text" id="editGuardianName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="editGuardianRelation" class="block mb-2 font-semibold text-gray-600">সম্পর্ক</label>
+                                <input type="text" id="editGuardianRelation" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="editVillage" class="block mb-2 font-semibold text-gray-600">গ্রাম</label>
+                            <input type="text" id="editVillage" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="editPostOffice" class="block mb-2 font-semibold text-gray-600">ডাকঘর/ইউনিয়ন</label>
+                            <input type="text" id="editPostOffice" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="editThana" class="block mb-2 font-semibold text-gray-600">থানা</label>
+                                <input type="text" id="editThana" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="editDistrict" class="block mb-2 font-semibold text-gray-600">জেলা</label>
+                                <input type="text" id="editDistrict" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="editMobile" class="block mb-2 font-semibold text-gray-600">মোবাইল নং</label>
+                            <input type="tel" id="editMobile" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="flex justify-end gap-4 pt-4">
+                            <button type="button" id="cancelEditBtn" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-lg font-semibold hover:bg-gray-400"> বাতিল করুন</button>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700">পরিবর্তন সংরক্ষণ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Toast Notification -->
         <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white py-3 px-6 rounded-lg shadow-lg transition-transform duration-300 translate-y-20 opacity-0">
             <p id="toast-message"></p>
@@ -303,6 +378,10 @@
         const classSelectForStudent = document.getElementById('classSelectForStudent');
         const studentListDiv = document.getElementById('studentList');
         const downloadExcelBtn = document.getElementById('downloadExcelBtn');
+        const editStudentModal = document.getElementById('editStudentModal');
+        const editStudentForm = document.getElementById('editStudentForm');
+        const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
 
         // Attendance Management
         const academicYearSelect = document.getElementById('academicYearSelect');
@@ -318,7 +397,7 @@
         let userId = null;
         let unsubscribeClasses = null;
         let unsubscribeStudents = null;
-        let currentStudentsData = []; // To store student data for Excel export
+        let currentStudentsData = [];
 
         const jamaatOrder = [
             "তাকমিল", "ফযিলত", "জালালাইন", "শরহে বেকায়া", "কাফিয়া",
@@ -391,6 +470,11 @@
             classSelectForStudent.addEventListener('change', (e) => loadStudents(e.target.value));
             openAttendanceSheetBtn.addEventListener('click', renderAttendanceSheet);
             downloadExcelBtn.addEventListener('click', downloadAsExcel);
+            
+            // Modal Listeners
+            closeEditModalBtn.addEventListener('click', closeEditModal);
+            cancelEditBtn.addEventListener('click', closeEditModal);
+            editStudentForm.addEventListener('submit', updateStudent);
         }
 
         // --- Class (Jamaat) Management Functions ---
@@ -579,7 +663,7 @@
             unsubscribeStudents = onSnapshot(q, (snapshot) => {
                 const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 students.sort((a, b) => a.roll - b.roll);
-                currentStudentsData = students; // Store for Excel export
+                currentStudentsData = students;
                 
                 studentListDiv.innerHTML = students.length ? '' : '<p class="text-gray-500">এই জামাতে কোনো ছাত্র পাওয়া যায়নি।</p>';
                 students.forEach(std => {
@@ -590,13 +674,23 @@
                             <span class="font-bold text-lg">${std.roll}.</span>
                             <span class="font-semibold ml-2">${std.name}</span>
                         </div>
-                        <button data-id="${std.id}" class="delete-student-btn text-red-500 hover:text-red-700 font-bold">মুছুন</button>
+                        <div class="flex items-center gap-3">
+                            <button data-id="${std.id}" class="edit-student-btn text-blue-600 hover:text-blue-800" title="সম্পাদনা করুন">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <button data-id="${std.id}" class="delete-student-btn text-red-600 hover:text-red-800" title="মুছে ফেলুন">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
                     `;
                     studentListDiv.appendChild(div);
                 });
                 
                 document.querySelectorAll('.delete-student-btn').forEach(button => {
-                    button.addEventListener('click', (e) => deleteStudent(e.target.dataset.id));
+                    button.addEventListener('click', (e) => deleteStudent(e.currentTarget.dataset.id));
+                });
+                document.querySelectorAll('.edit-student-btn').forEach(button => {
+                    button.addEventListener('click', (e) => openEditModal(e.currentTarget.dataset.id));
                 });
 
             }, (error) => {
@@ -614,6 +708,59 @@
             } catch (error) {
                 console.error("Error deleting student:", error);
                 showToast("ছাত্রকে মুছতে সমস্যা হয়েছে।", true);
+            }
+        }
+
+        function openEditModal(studentId) {
+            const student = currentStudentsData.find(s => s.id === studentId);
+            if (!student) return;
+
+            document.getElementById('editStudentId').value = student.id;
+            document.getElementById('editStudentName').value = student.name || '';
+            document.getElementById('editStudentRoll').value = student.roll || '';
+            document.getElementById('editFatherName').value = student.fatherName || '';
+            document.getElementById('editMotherName').value = student.motherName || '';
+            document.getElementById('editGuardianName').value = student.guardianName || '';
+            document.getElementById('editGuardianRelation').value = student.guardianRelation || '';
+            document.getElementById('editVillage').value = student.village || '';
+            document.getElementById('editPostOffice').value = student.postOffice || '';
+            document.getElementById('editThana').value = student.thana || '';
+            document.getElementById('editDistrict').value = student.district || '';
+            document.getElementById('editMobile').value = student.mobile || '';
+
+            editStudentModal.style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            editStudentModal.style.display = 'none';
+        }
+
+        async function updateStudent(event) {
+            event.preventDefault();
+            const studentId = document.getElementById('editStudentId').value;
+            
+            const updatedData = {
+                name: document.getElementById('editStudentName').value.trim(),
+                roll: parseInt(document.getElementById('editStudentRoll').value.trim(), 10),
+                fatherName: document.getElementById('editFatherName').value.trim(),
+                motherName: document.getElementById('editMotherName').value.trim(),
+                guardianName: document.getElementById('editGuardianName').value.trim(),
+                guardianRelation: document.getElementById('editGuardianRelation').value.trim(),
+                village: document.getElementById('editVillage').value.trim(),
+                postOffice: document.getElementById('editPostOffice').value.trim(),
+                thana: document.getElementById('editThana').value.trim(),
+                district: document.getElementById('editDistrict').value.trim(),
+                mobile: document.getElementById('editMobile').value.trim(),
+            };
+
+            try {
+                const studentDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/students`, studentId);
+                await updateDoc(studentDocRef, updatedData);
+                showToast("ছাত্রের তথ্য সফলভাবে আপডেট করা হয়েছে।");
+                closeEditModal();
+            } catch (error) {
+                console.error("Error updating student:", error);
+                showToast("ছাত্রের তথ্য আপডেট করতে সমস্যা হয়েছে।", true);
             }
         }
 
