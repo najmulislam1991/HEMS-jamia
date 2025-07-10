@@ -28,23 +28,6 @@
             color: #3b82f6;
             background-color: #eff6ff;
         }
-        .attendance-btn {
-            transition: all 0.2s ease-in-out;
-        }
-        .present {
-            background-color: #22c55e;
-            color: white;
-            border: 2px solid #16a34a;
-        }
-        .absent {
-            background-color: #ef4444;
-            color: white;
-            border: 2px solid #dc2626;
-        }
-        .not-marked {
-            background-color: #e5e7eb;
-            color: #4b5563;
-        }
         .view {
             display: none;
         }
@@ -73,6 +56,33 @@
         .modal-backdrop {
             background-color: rgba(0,0,0,0.5);
         }
+        
+        /* New Attendance Icon Styles */
+        .attendance-icon {
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+            color: #9ca3af; /* Default gray color */
+        }
+        .attendance-icon:hover {
+            transform: scale(1.2);
+        }
+        .attendance-icon.present {
+            color: #22c55e; /* Green for present */
+        }
+        .attendance-icon.absent {
+            color: #ef4444; /* Red for absent */
+        }
+
+        /* Tick Animation */
+        @keyframes tick-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        .tick-animation {
+            animation: tick-pop 0.3s ease-in-out;
+        }
+
         @media print {
             .no-print {
                 display: none !important;
@@ -157,7 +167,6 @@
                             <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">ব্যবস্থাপনা</h2>
                             <div class="space-y-4">
                                 <button id="openAddClassModalBtn" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-sm">নতুন জামাত যোগ করুন</button>
-                                <button id="openAddKitabModalBtn" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors duration-300 shadow-sm">নতুন কিতাব যোগ করুন</button>
                             </div>
                         </div>
                     </div>
@@ -217,28 +226,24 @@
             </div>
         </div>
         
-        <!-- Add Kitab Modal -->
-        <div id="addKitabModal" class="fixed inset-0 z-50 items-center justify-center hidden">
+        <!-- Edit Kitab Modal -->
+        <div id="editKitabModal" class="fixed inset-0 z-50 items-center justify-center hidden">
             <div class="modal-backdrop fixed inset-0 bg-black opacity-50"></div>
-            <div class="bg-white rounded-lg shadow-xl m-4 sm:max-w-md sm:w-full z-50">
+            <div class="bg-white rounded-lg shadow-xl m-4 sm:max-w-lg sm:w-full z-50">
                 <div class="p-6">
                     <div class="flex justify-between items-center border-b pb-3 mb-6">
-                        <h2 class="text-2xl font-bold text-gray-700">নতুন কিতাব যোগ করুন</h2>
-                        <button id="closeAddKitabModalBtn" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+                        <h2 class="text-2xl font-bold text-gray-700">কিতাব সম্পাদনা করুন</h2>
+                        <button id="closeEditKitabModalBtn" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
                     </div>
-                    <form id="addKitabForm" class="space-y-4">
+                    <h3 class="font-semibold text-lg mb-2">জামাত: <span id="editKitabJamaatName"></span></h3>
+                    <div id="kitabEditList" class="space-y-2 mb-4 max-h-48 overflow-y-auto"></div>
+                    <form id="addKitabInModalForm" class="space-y-4 border-t pt-4">
+                        <input type="hidden" id="editKitabClassId">
                         <div>
-                            <label for="classSelectForKitab" class="block mb-2 font-semibold text-gray-600">জামাত নির্বাচন করুন</label>
-                            <select id="classSelectForKitab" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500" required></select>
+                            <label for="newKitabName" class="block mb-2 font-semibold text-gray-600">নতুন কিতাবের নাম</label>
+                            <input type="text" id="newKitabName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                         </div>
-                        <div>
-                            <label for="kitabName" class="block mb-2 font-semibold text-gray-600">কিতাবের নাম</label>
-                            <input type="text" id="kitabName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                        </div>
-                        <div class="flex justify-end gap-4 pt-4">
-                            <button type="button" id="cancelAddKitabBtn" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-lg font-semibold hover:bg-gray-400"> বাতিল</button>
-                            <button type="submit" class="bg-indigo-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-indigo-700">কিতাব যোগ করুন</button>
-                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-indigo-700">নতুন কিতাব যোগ করুন</button>
                     </form>
                 </div>
             </div>
@@ -436,7 +441,7 @@
         // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, collection, addDoc, getDocs, onSnapshot, setDoc, query, where, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, addDoc, getDocs, onSnapshot, setDoc, query, where, deleteDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -478,13 +483,9 @@
         const classListDiv = document.getElementById('classList');
         
         // Kitab Management
-        const openAddKitabModalBtn = document.getElementById('openAddKitabModalBtn');
-        const addKitabModal = document.getElementById('addKitabModal');
-        const closeAddKitabModalBtn = document.getElementById('closeAddKitabModalBtn');
-        const cancelAddKitabBtn = document.getElementById('cancelAddKitabBtn');
-        const addKitabForm = document.getElementById('addKitabForm');
-        const classSelectForKitab = document.getElementById('classSelectForKitab');
-        const kitabNameInput = document.getElementById('kitabName');
+        const editKitabModal = document.getElementById('editKitabModal');
+        const closeEditKitabModalBtn = document.getElementById('closeEditKitabModalBtn');
+        const addKitabInModalForm = document.getElementById('addKitabInModalForm');
 
 
         // Student Management
@@ -589,12 +590,10 @@
             closeAddClassModalBtn.addEventListener('click', () => addClassModal.style.display = 'none');
             cancelAddClassBtn.addEventListener('click', () => addClassModal.style.display = 'none');
             addClassForm.addEventListener('submit', addClass);
-
-            openAddKitabModalBtn.addEventListener('click', () => addKitabModal.style.display = 'flex');
-            closeAddKitabModalBtn.addEventListener('click', () => addKitabModal.style.display = 'none');
-            cancelAddKitabBtn.addEventListener('click', () => addKitabModal.style.display = 'none');
-            addKitabForm.addEventListener('submit', addKitab);
             
+            closeEditKitabModalBtn.addEventListener('click', () => editKitabModal.style.display = 'none');
+            addKitabInModalForm.addEventListener('submit', handleAddKitabInModal);
+
             // Student Modals
             openAddStudentModalBtn.addEventListener('click', () => addStudentModal.style.display = 'flex');
             closeAddStudentModalBtn.addEventListener('click', () => addStudentModal.style.display = 'none');
@@ -644,30 +643,6 @@
             }
         }
 
-        async function addKitab(e) {
-            e.preventDefault();
-            const classId = classSelectForKitab.value;
-            const kitabName = kitabNameInput.value.trim();
-
-            if (!classId || !kitabName) {
-                showToast("অনুগ্রহ করে জামাত ও কিতাবের নাম পূরণ করুন।", true);
-                return;
-            }
-
-            const classDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/classes`, classId);
-            try {
-                await updateDoc(classDocRef, {
-                    kitabs: arrayUnion(kitabName)
-                });
-                showToast("কিতাব সফলভাবে যোগ করা হয়েছে।");
-                addKitabForm.reset();
-                addKitabModal.style.display = 'none';
-            } catch (error) {
-                console.error("Error adding kitab:", error);
-                showToast("কিতাব যোগ করতে সমস্যা হয়েছে।", true);
-            }
-        }
-
         function loadClasses() {
             if (unsubscribeClasses) unsubscribeClasses();
             const classCollectionRef = collection(db, `artifacts/${firestoreAppId}/public/data/classes`);
@@ -695,7 +670,10 @@
                     div.innerHTML = `
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-lg">${cls.name}</span>
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-3">
+                                <button data-id="${cls.id}" title="কিতাব সম্পাদনা করুন" class="edit-kitab-btn text-indigo-600 hover:text-indigo-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+                                </button>
                                 <button data-id="${cls.id}" data-status="${cls.isActive}" title="${statusTitle}" class="toggle-status-btn ${statusClass}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -724,6 +702,10 @@
                         const currentStatus = e.currentTarget.dataset.status === 'true';
                         toggleJamaatStatus(id, currentStatus);
                     });
+                });
+                
+                document.querySelectorAll('.edit-kitab-btn').forEach(button => {
+                    button.addEventListener('click', (e) => openEditKitabModal(e.currentTarget.dataset.id));
                 });
 
             }, (error) => {
@@ -770,7 +752,6 @@
             
             classSelectForStudent.innerHTML = optionsHtml;
             classSelectForAttendance.innerHTML = optionsHtml;
-            classSelectForKitab.innerHTML = optionsHtml;
             
             if (activeClasses.length) {
                 loadStudents(classSelectForStudent.value);
@@ -790,6 +771,80 @@
                 kitabSelectForAttendance.innerHTML = '<option value="">কোনো কিতাব নেই</option>';
             }
         }
+        
+        function openEditKitabModal(classId) {
+            const jamaat = allJamaats.find(j => j.id === classId);
+            if (!jamaat) return;
+
+            document.getElementById('editKitabJamaatName').innerText = jamaat.name;
+            document.getElementById('editKitabClassId').value = classId;
+            const kitabListContainer = document.getElementById('kitabEditList');
+            kitabListContainer.innerHTML = '';
+
+            if (jamaat.kitabs && jamaat.kitabs.length > 0) {
+                jamaat.kitabs.forEach(kitab => {
+                    const li = document.createElement('div');
+                    li.className = 'flex justify-between items-center bg-gray-100 p-2 rounded';
+                    li.innerHTML = `
+                        <span>${kitab}</span>
+                        <button data-kitab="${kitab}" class="delete-kitab-btn text-red-500 hover:text-red-700">&times;</button>
+                    `;
+                    kitabListContainer.appendChild(li);
+                });
+            } else {
+                kitabListContainer.innerHTML = '<p class="text-sm text-gray-500">কোনো কিতাব যোগ করা হয়নি।</p>';
+            }
+            
+            document.querySelectorAll('.delete-kitab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const kitabNameToDelete = e.currentTarget.dataset.kitab;
+                    deleteKitab(classId, kitabNameToDelete);
+                });
+            });
+
+            editKitabModal.style.display = 'flex';
+        }
+        
+        async function deleteKitab(classId, kitabName) {
+            if(!confirm(`আপনি কি "${kitabName}" কিতাবটি মুছে ফেলতে চান?`)) return;
+            const classDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/classes`, classId);
+            try {
+                await updateDoc(classDocRef, {
+                    kitabs: arrayRemove(kitabName)
+                });
+                showToast("কিতাব মুছে ফেলা হয়েছে।");
+                openEditKitabModal(classId); // Refresh the modal list
+            } catch (error) {
+                console.error("Error deleting kitab:", error);
+                showToast("কিতাব মুছতে সমস্যা হয়েছে।", true);
+            }
+        }
+        
+        async function handleAddKitabInModal(e) {
+            e.preventDefault();
+            const classId = document.getElementById('editKitabClassId').value;
+            const newKitabNameInput = document.getElementById('newKitabName');
+            const newKitabName = newKitabNameInput.value.trim();
+
+            if (!newKitabName) {
+                showToast("কিতাবের নাম লিখুন।", true);
+                return;
+            }
+            
+            const classDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/classes`, classId);
+            try {
+                await updateDoc(classDocRef, {
+                    kitabs: arrayUnion(newKitabName)
+                });
+                showToast("নতুন কিতাব যোগ করা হয়েছে।");
+                newKitabNameInput.value = '';
+                openEditKitabModal(classId); // Refresh the modal list
+            } catch (error) {
+                console.error("Error adding new kitab:", error);
+                showToast("নতুন কিতাব যোগ করতে সমস্যা হয়েছে।", true);
+            }
+        }
+
 
         // --- Student Management Functions ---
         function openAddModal() {
@@ -1027,31 +1082,55 @@
                 attendanceRecords[data.studentId] = data.status;
             });
 
+            const headerInfo = `
+                <div class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
+                        <p><strong>শিক্ষাবর্ষ:</strong> ${academicYearSelect.options[academicYearSelect.selectedIndex].text}</p>
+                        <p><strong>জামাত:</strong> ${classSelectForAttendance.options[classSelectForAttendance.selectedIndex].text}</p>
+                        <p><strong>কিতাব:</strong> ${kitab || 'N/A'}</p>
+                        <p><strong>তারিখ:</strong> ${new Date(date).toLocaleDateString('bn-BD')}</p>
+                    </div>
+                </div>
+            `;
+
+            const studentRows = students.map(student => {
+                const status = attendanceRecords[student.id];
+                const presentClass = status === 'present' ? 'present' : '';
+                const absentClass = status === 'absent' ? 'absent' : '';
+                return `
+                    <div class="flex justify-between items-center p-3 border-b hover:bg-gray-50">
+                        <div>
+                            <span class="font-bold text-gray-700 w-8 inline-block">${student.roll}.</span>
+                            <span class="ml-4 text-gray-800">${student.name}</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button data-studentid="${student.id}" data-status="present" class="attendance-icon ${presentClass}" title="উপস্থিত">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </button>
+                            <button data-studentid="${student.id}" data-status="absent" class="attendance-icon ${absentClass}" title="অনুপস্থিত">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
             attendanceSheetDiv.innerHTML = `
+                ${headerInfo}
                 <div class="flex justify-end mb-4">
                     <button id="downloadPdfBtn" class="no-print bg-rose-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-rose-700 transition-colors duration-300 shadow-sm">PDF রিপোর্ট ডাউনলোড</button>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    ${students.map(student => {
-                        const status = attendanceRecords[student.id];
-                        const presentClass = status === 'present' ? 'present' : 'not-marked';
-                        const absentClass = status === 'absent' ? 'absent' : 'not-marked';
-                        return `
-                        <div class="p-4 rounded-lg shadow-md bg-gray-50 text-center">
-                            <p class="font-bold text-lg">${student.name}</p>
-                            <p class="text-gray-600 mb-3">রোল: ${student.roll}</p>
-                            <div class="flex justify-center gap-2 no-print">
-                                <button data-studentid="${student.id}" data-status="present" class="attendance-btn flex-1 py-2 rounded-md font-semibold ${presentClass}">উপস্থিত</button>
-                                <button data-studentid="${student.id}" data-status="absent" class="attendance-btn flex-1 py-2 rounded-md font-semibold ${absentClass}">অনুপস্থিত</button>
-                            </div>
-                        </div>
-                        `
-                    }).join('')}
+                <div class="bg-white rounded-lg shadow">
+                    ${studentRows}
                 </div>
             `;
 
             document.getElementById('downloadPdfBtn').addEventListener('click', () => generateAndDownloadPdf(students, attendanceRecords));
-            document.querySelectorAll('.attendance-btn').forEach(button => {
+            document.querySelectorAll('.attendance-icon').forEach(button => {
                 button.addEventListener('click', handleAttendanceMarking);
             });
         }
@@ -1126,19 +1205,23 @@
             const attendanceDocId = `${date}_${academicYear}_${classId}_${kitab}_${studentId}`;
 
             try {
-                const attendanceDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/attendance`, attendanceDocId);
-                await setDoc(attendanceDocRef, {
+                await setDoc(doc(db, `artifacts/${firestoreAppId}/public/data/attendance`, attendanceDocId), {
                     studentId, classId, academicYear, kitab, date, status
                 });
                 
-                const parent = button.parentElement;
-                
-                parent.querySelectorAll('.attendance-btn').forEach(btn => {
-                    btn.classList.remove('present', 'absent');
-                    btn.classList.add('not-marked');
+                const iconContainer = button.parentElement;
+                iconContainer.querySelectorAll('.attendance-icon').forEach(icon => {
+                    icon.classList.remove('present', 'absent');
                 });
-                button.classList.remove('not-marked');
-                button.classList.add(status === 'present' ? 'present' : 'absent');
+                
+                button.classList.add(status);
+
+                if (status === 'present') {
+                    button.classList.add('tick-animation');
+                    button.addEventListener('animationend', () => {
+                        button.classList.remove('tick-animation');
+                    }, { once: true });
+                }
 
                 showToast("হাজিরা আপডেট হয়েছে।");
 
