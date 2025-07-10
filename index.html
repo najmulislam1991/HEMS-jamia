@@ -31,6 +31,9 @@
             color: #3b82f6;
             background-color: #eff6ff;
         }
+        .sidebar-link.active {
+            background-color: #4b5563;
+        }
         .view {
             display: none;
         }
@@ -214,37 +217,106 @@
     <div class="container mx-auto p-4 md:p-8 max-w-7xl">
         
         <!-- Header -->
-        <header class="bg-white shadow-md rounded-lg p-6 mb-8 text-center">
-            <h1 class="text-2xl md:text-4xl font-bold text-blue-600">Hasania Exam Management System (HEMS)</h1>
-            <p class="text-gray-600 mt-2">একটি ডিজিটাল হাজিরা ও পরীক্ষা ব্যবস্থাপনা সিস্টেম</p>
+        <header class="bg-white shadow-md rounded-lg p-4 mb-8 flex justify-between items-center">
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">Hasania Exam Management System</h1>
+            <!-- Desktop Navigation Tabs -->
+            <nav id="desktop-nav" class="hidden md:flex flex-wrap justify-center gap-2">
+                <button data-view="home" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                    <span>হোম</span>
+                </button>
+                <button data-view="attendance" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                    <span>হাজিরা গ্রহণ</span>
+                </button>
+                <button data-view="students" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                    <span>ছাত্র ব্যবস্থাপনা</span>
+                </button>
+                <button data-view="classes" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                    <span>জামাত ও কিতাব</span>
+                </button>
+                <button data-view="hems" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                    <span>HEMS</span>
+                </button>
+            </nav>
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="mobile-menu-btn" class="p-2 rounded-md hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+            </div>
         </header>
 
-        <!-- Navigation Tabs -->
-        <div class="mb-8 bg-white p-2 rounded-lg shadow-sm flex flex-wrap justify-center gap-2">
-            <button id="tab-about" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" /></svg>
-                <span>জামিয়া পরিচিতি</span>
-            </button>
-            <button id="tab-attendance" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>
-                <span>হাজিরা গ্রহণ</span>
-            </button>
-            <button id="tab-students" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0110 15c-1.55 0-2.958-.5-4-1.33a6.97 6.97 0 00-1.5 4.33c0 .34.024.673.07 1h10.86z" /></svg>
-                <span>ছাত্র ব্যবস্থাপনা</span>
-            </button>
-            <button id="tab-classes" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 005.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0014.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg>
-                <span>জামাত ও কিতাব</span>
-            </button>
-            <button id="tab-hems" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
-                <span>HEMS</span>
-            </button>
+        <!-- Mobile Sidebar -->
+        <div id="mobile-sidebar" class="fixed top-0 left-0 h-full w-64 bg-gray-800 text-white p-4 transform -translate-x-full transition-transform duration-300 ease-in-out z-50">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold">মেনু</h2>
+                <button id="close-sidebar-btn" class="p-2">&times;</button>
+            </div>
+            <nav class="flex flex-col gap-4">
+                <button data-view="home" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+                    <span>হোম</span>
+                </button>
+                <button data-view="about" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" /></svg>
+                    <span>জামিয়া পরিচিতি</span>
+                </button>
+                <button data-view="attendance" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>
+                    <span>হাজিরা গ্রহণ</span>
+                </button>
+                <button data-view="students" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0110 15c-1.55 0-2.958-.5-4-1.33a6.97 6.97 0 00-1.5 4.33c0 .34.024.673.07 1h10.86z" /></svg>
+                    <span>ছাত্র ব্যবস্থাপনা</span>
+                </button>
+                <button data-view="classes" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 005.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0014.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg>
+                    <span>জামাত ও কিতাব</span>
+                </button>
+                <button data-view="hems" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                    <span>HEMS</span>
+                </button>
+            </nav>
         </div>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-50 hidden z-40"></div>
+
 
         <!-- Views Container -->
         <main>
+            <!-- Home View -->
+            <div id="view-home" class="view">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div id="card-attendance" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">হাজিরা গ্রহণ</h3>
+                        <p class="text-gray-600 text-sm">দৈনিক ছাত্র হাজিরা নিন এবং রিপোর্ট দেখুন।</p>
+                    </div>
+                    <div id="card-students" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer text-center">
+                        <div class="bg-green-100 text-green-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0110 15c-1.55 0-2.958-.5-4-1.33a6.97 6.97 0 00-1.5 4.33c0 .34.024.673.07 1h10.86z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">ছাত্র ব্যবস্থাপনা</h3>
+                        <p class="text-gray-600 text-sm">নতুন ছাত্র যোগ, সম্পাদনা ও তালিকা দেখুন।</p>
+                    </div>
+                    <div id="card-classes" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer text-center">
+                        <div class="bg-indigo-100 text-indigo-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 005.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0014.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">জামাত ও কিতাব</h3>
+                        <p class="text-gray-600 text-sm">জামাত ও কিতাব যোগ, সম্পাদনা ও পরিচালনা করুন।</p>
+                    </div>
+                    <div id="card-about" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer text-center">
+                        <div class="bg-purple-100 text-purple-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">জামিয়া পরিচিতি</h3>
+                        <p class="text-gray-600 text-sm">মাদ্রাসার পরিচিতি ও যোগাযোগের তথ্য।</p>
+                    </div>
+                </div>
+            </div>
+            
             <!-- About View -->
             <div id="view-about" class="view">
                 <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
@@ -323,21 +395,21 @@
             <!-- Students View -->
             <div id="view-students" class="view">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <div class="flex justify-between items-center border-b pb-3 mb-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-center border-b pb-3 mb-6 gap-4">
                         <h2 class="text-2xl font-bold text-gray-700">ছাত্রদের তালিকা</h2>
                         <div class="flex gap-4">
                             <button id="openAddStudentModalBtn" class="btn-gradient btn-gradient-green">নতুন ছাত্র যোগ করুন</button>
                             <button id="downloadExcelBtn" class="btn-gradient btn-gradient-emerald">Excel ডাউনলোড</button>
                         </div>
                     </div>
-                    <div class="flex flex-wrap gap-4 mb-4">
-                        <div>
+                    <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                        <div class="flex-1">
                             <label for="academicYearSelectForStudent" class="block mb-2 font-semibold text-gray-600">শিক্ষাবর্ষ</label>
-                            <select id="academicYearSelectForStudent" class="w-full md:w-auto p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"></select>
+                            <select id="academicYearSelectForStudent" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"></select>
                         </div>
-                        <div>
+                        <div class="flex-1">
                             <label for="classSelectForStudent" class="block mb-2 font-semibold text-gray-600">জামাত নির্বাচন করুন</label>
-                            <select id="classSelectForStudent" class="w-full md:w-auto p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                            <select id="classSelectForStudent" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
                                 <option>প্রথমে জামাত যোগ করুন</option>
                             </select>
                         </div>
@@ -708,6 +780,7 @@
 
         // DOM Elements
         const tabs = {
+            home: document.getElementById('tab-home-desktop'),
             about: document.getElementById('tab-about'),
             attendance: document.getElementById('tab-attendance'),
             students: document.getElementById('tab-students'),
@@ -715,6 +788,7 @@
             hems: document.getElementById('tab-hems'),
         };
         const views = {
+            home: document.getElementById('view-home'),
             about: document.getElementById('view-about'),
             attendance: document.getElementById('view-attendance'),
             students: document.getElementById('view-students'),
@@ -874,7 +948,7 @@
             populateAcademicYears();
             populateDistricts('district');
             populateDistricts('editDistrict');
-            switchView('about'); // Start with the about page
+            switchView('home'); // Start with the home page
             loadClasses();
         }
 
@@ -927,16 +1001,59 @@
         // --- View Switching Logic ---
         function switchView(viewName) {
             Object.values(views).forEach(view => view.classList.remove('active'));
-            Object.values(tabs).forEach(tab => tab.classList.remove('active'));
-            views[viewName].classList.add('active');
-            tabs[viewName].classList.add('active');
+            document.querySelectorAll('#desktop-nav .tab-button').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#mobile-sidebar .sidebar-link').forEach(link => link.classList.remove('active'));
+
+            if (views[viewName]) {
+                views[viewName].classList.add('active');
+            } else if (viewName === "home") {
+                 views.home.classList.add('active');
+            }
+            
+            const desktopTab = document.querySelector(`#desktop-nav button[data-view="${viewName}"]`);
+            if(desktopTab) desktopTab.classList.add('active');
+
+            const mobileLink = document.querySelector(`#mobile-sidebar button[data-view="${viewName}"]`);
+            if(mobileLink) mobileLink.classList.add('active');
         }
 
         // --- Event Listeners Setup ---
         function setupEventListeners() {
-            Object.keys(tabs).forEach(tabName => {
-                tabs[tabName].addEventListener('click', () => switchView(tabName));
+            document.querySelectorAll('#desktop-nav .tab-button').forEach(tab => {
+                tab.addEventListener('click', () => switchView(tab.dataset.view));
             });
+
+            // Mobile Sidebar
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileSidebar = document.getElementById('mobile-sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileSidebar.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+            });
+
+            const closeSidebar = () => {
+                mobileSidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            };
+
+            closeSidebarBtn.addEventListener('click', closeSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
+            
+            document.querySelectorAll('#mobile-sidebar .sidebar-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    switchView(link.dataset.view);
+                    closeSidebar();
+                });
+            });
+
+            // Home page cards
+            document.getElementById('card-attendance').addEventListener('click', () => switchView('attendance'));
+            document.getElementById('card-students').addEventListener('click', () => switchView('students'));
+            document.getElementById('card-classes').addEventListener('click', () => switchView('classes'));
+            document.getElementById('card-about').addEventListener('click', () => switchView('about'));
             
             // Jamaat & Kitab Modals
             openAddClassModalBtn.addEventListener('click', () => addClassModal.style.display = 'flex');
