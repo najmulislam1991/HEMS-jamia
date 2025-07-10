@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=SolaimanLipi:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Cropper.js for Image Cropping -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <!-- PDF & Excel Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -57,30 +60,98 @@
             background-color: rgba(0,0,0,0.5);
         }
         
-        /* New Attendance Icon Styles */
-        .attendance-icon {
+        /* New Attendance Button Styles */
+        .attendance-action-btn {
+            position: relative;
+            padding: 8px 16px;
+            border-radius: 9999px; /* Fully rounded */
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, color 0.2s;
-            color: #9ca3af; /* Default gray color */
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border: 2px solid transparent;
+            width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .attendance-icon:hover {
-            transform: scale(1.2);
+        .attendance-action-btn .btn-text, .attendance-action-btn .icon {
+            transition: opacity 0.3s ease;
         }
-        .attendance-icon.present {
-            color: #22c55e; /* Green for present */
+        .attendance-action-btn .icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            font-size: 1.5rem;
+            line-height: 1;
         }
-        .attendance-icon.absent {
-            color: #ef4444; /* Red for absent */
+        
+        /* Default State */
+        .present-btn, .absent-btn {
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+        .present-btn:hover, .absent-btn:hover {
+            border-color: #d1d5db;
         }
 
-        /* Tick Animation */
-        @keyframes tick-pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.5); }
-            100% { transform: scale(1); }
+        /* Present Button Active State */
+        .present-btn.active {
+            background-image: linear-gradient(to right, #22c55e, #4ade80);
+            border-color: #16a34a; 
+            color: white;
         }
-        .tick-animation {
-            animation: tick-pop 0.3s ease-in-out;
+        .present-btn.active .btn-text {
+            opacity: 0;
+        }
+        .present-btn.active .icon {
+            opacity: 1;
+        }
+        .present-btn .tick-icon {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            stroke-width: 4; 
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+            transition: stroke-dashoffset 0.4s ease-out;
+        }
+        .present-btn.active .tick-icon {
+            stroke-dashoffset: 0;
+        }
+
+        /* Shimmer Effect */
+        .present-btn.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 80%;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            transform: skewX(-25deg);
+            animation: shimmer 1s forwards;
+        }
+        @keyframes shimmer {
+            100% { left: 150%; }
+        }
+
+        /* Absent Button Active State */
+        .absent-btn.active {
+            background-image: linear-gradient(to right, #ef4444, #f87171);
+            color: white;
+            border-color: #dc2626;
+        }
+        .absent-btn.active .btn-text {
+            opacity: 0;
+        }
+        .absent-btn.active .icon {
+            opacity: 1;
         }
 
         /* PDF Template Styling */
@@ -89,6 +160,45 @@
             left: -9999px;
             top: auto;
             width: 11.7in; /* A4 Landscape width */
+        }
+        
+        [contenteditable]:focus {
+            outline: 2px solid #3b82f6;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-gradient {
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-gradient-blue {
+            background-image: linear-gradient(to right, #3b82f6, #60a5fa);
+        }
+        .btn-gradient-green {
+            background-image: linear-gradient(to right, #16a34a, #4ade80);
+        }
+        .btn-gradient-emerald {
+            background-image: linear-gradient(to right, #059669, #34d399);
+        }
+        .btn-gradient-indigo {
+            background-image: linear-gradient(to right, #4f46e5, #818cf8);
+        }
+        .btn-gradient-gray {
+            background-image: linear-gradient(to right, #6b7280, #9ca3af);
+        }
+        
+        #cropper-container > img {
+            display: block;
+            max-width: 100%;
         }
 
         @media print {
@@ -111,15 +221,80 @@
 
         <!-- Navigation Tabs -->
         <div class="mb-8 bg-white p-2 rounded-lg shadow-sm flex flex-wrap justify-center gap-2">
-            <button id="tab-attendance" class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">হাজিরা গ্রহণ</button>
-            <button id="tab-students" class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">ছাত্র ব্যবস্থাপনা</button>
-            <button id="tab-classes" class="tab-button flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">জামাত ও কিতাব</button>
+            <button id="tab-about" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" /></svg>
+                <span>জামিয়া পরিচিতি</span>
+            </button>
+            <button id="tab-attendance" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>
+                <span>হাজিরা গ্রহণ</span>
+            </button>
+            <button id="tab-students" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0110 15c-1.55 0-2.958-.5-4-1.33a6.97 6.97 0 00-1.5 4.33c0 .34.024.673.07 1h10.86z" /></svg>
+                <span>ছাত্র ব্যবস্থাপনা</span>
+            </button>
+            <button id="tab-classes" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 005.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0014.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg>
+                <span>জামাত ও কিতাব</span>
+            </button>
+            <button id="tab-hems" class="tab-button flex items-center justify-center gap-2 flex-grow sm:flex-grow-0 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                <span>HEMS</span>
+            </button>
         </div>
 
         <!-- Views Container -->
         <main>
+            <!-- About View -->
+            <div id="view-about" class="view">
+                <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+                    <div class="flex items-center gap-4 border-b pb-4 mb-4">
+                        <div class="bg-blue-600 text-white rounded-full h-16 w-16 flex items-center justify-center text-4xl font-bold">
+                            H
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">জামিয়া হাসানিয়া কওমীয়া ও এতিমখানা</h2>
+                            <p class="text-gray-600">রঘুনাথপুর, শিঙ্গাশোলপুর, কালিয়া, নড়াইল।</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <p contenteditable="true" class="text-gray-700 leading-relaxed p-2 border border-transparent hover:border-gray-300 rounded-md transition-all">
+                            এখানে জামিয়া সম্পর্কে বিস্তারিত লিখুন। এই লেখাটি পরিবর্তনযোগ্য। আপনি এখানে ক্লিক করে আপনার মাদ্রাসার ইতিহাস, লক্ষ্য ও উদ্দেশ্য, এবং অন্যান্য গুরুত্বপূর্ণ তথ্য যোগ করতে পারেন।
+                        </p>
+                        <div class="border-t pt-4 space-y-2">
+                            <p class="flex items-center gap-2 text-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                                লোকেশন: রঘুনাথপুর, কালিয়া, নড়াইল
+                            </p>
+                            <p class="flex items-center gap-2 text-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
+                                যোগাযোগ: ০১XXXXXXXXX
+                            </p>
+                            <p class="flex items-center gap-2 text-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 2.006l7.997 3.878A2 2 0 0118 8.71V15a2 2 0 01-2 2H4a2 2 0 01-2-2V8.71a2 2 0 01.003-1.126zM10 12a2 2 0 100-4 2 2 0 000 4z" /></svg>
+                                ইমেইল: contact@jamiahasania.com
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- HEMS About View -->
+            <div id="view-hems" class="view">
+                 <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+                    <h2 class="text-2xl font-bold text-gray-800 border-b pb-4 mb-4">HEMS সম্পর্কে</h2>
+                    <p class="text-gray-700 leading-relaxed">
+                        Hasania Exam Management System (HEMS) একটি আধুনিক ও ডিজিটাল সমাধান, যা মাদ্রাসার পরীক্ষা ও হাজিরা ব্যবস্থাপনাকে সহজ করার জন্য তৈরি করা হয়েছে। এর মাধ্যমে জামাত ও কিতাব পরিচালনা, ছাত্র ভর্তি, দৈনিক হাজিরা গ্রহণ এবং রিপোর্ট তৈরি করার মতো গুরুত্বপূর্ণ কাজগুলো খুব সহজেই করা যায়।
+                    </p>
+                    <p class="text-gray-700 leading-relaxed mt-4">
+                        এই সিস্টেমটি ব্যবহার করে আপনি ছাত্রদের তথ্য ডিজিটালভাবে সংরক্ষণ করতে পারেন এবং যেকোনো সময় তাদের বিস্তারিত তথ্যসহ Excel ফাইল বা হাজিরা রিপোর্ট PDF আকারে ডাউনলোড করতে পারেন।
+                    </p>
+                </div>
+            </div>
+
+
             <!-- Attendance View -->
-            <div id="view-attendance" class="view active">
+            <div id="view-attendance" class="view">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">হাজিরা খাতা</h2>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
@@ -139,7 +314,7 @@
                                 <option>প্রথমে জামাত নির্বাচন করুন</option>
                             </select>
                         </div>
-                        <button id="openAttendanceSheetBtn" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-sm">হাজিরা খাতা খুলুন</button>
+                        <button id="openAttendanceSheetBtn" class="btn-gradient btn-gradient-blue w-full">হাজিরা খাতা খুলুন</button>
                     </div>
                     <div id="attendanceSheet" class="mt-8"></div>
                 </div>
@@ -151,18 +326,24 @@
                     <div class="flex justify-between items-center border-b pb-3 mb-6">
                         <h2 class="text-2xl font-bold text-gray-700">ছাত্রদের তালিকা</h2>
                         <div class="flex gap-4">
-                            <button id="openAddStudentModalBtn" class="bg-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-300 shadow-sm">নতুন ছাত্র যোগ করুন</button>
-                            <button id="downloadExcelBtn" class="bg-emerald-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-emerald-700 transition-colors duration-300 shadow-sm">Excel ডাউনলোড</button>
+                            <button id="openAddStudentModalBtn" class="btn-gradient btn-gradient-green">নতুন ছাত্র যোগ করুন</button>
+                            <button id="downloadExcelBtn" class="btn-gradient btn-gradient-emerald">Excel ডাউনলোড</button>
                         </div>
                     </div>
-                    <div class="mb-4">
-                        <label for="classSelectForStudent" class="block mb-2 font-semibold text-gray-600">জামাত নির্বাচন করুন</label>
-                        <select id="classSelectForStudent" class="w-full md:w-1/3 p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
-                            <option>প্রথমে জামাত যোগ করুন</option>
-                        </select>
+                    <div class="flex flex-wrap gap-4 mb-4">
+                        <div>
+                            <label for="academicYearSelectForStudent" class="block mb-2 font-semibold text-gray-600">শিক্ষাবর্ষ</label>
+                            <select id="academicYearSelectForStudent" class="w-full md:w-auto p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"></select>
+                        </div>
+                        <div>
+                            <label for="classSelectForStudent" class="block mb-2 font-semibold text-gray-600">জামাত নির্বাচন করুন</label>
+                            <select id="classSelectForStudent" class="w-full md:w-auto p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                                <option>প্রথমে জামাত যোগ করুন</option>
+                            </select>
+                        </div>
                     </div>
-                    <div id="studentList" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-                        <p class="text-gray-500">তালিকা দেখতে প্রথমে একটি জামাত নির্বাচন করুন।</p>
+                    <div id="studentList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        <p class="text-gray-500 col-span-full">তালিকা দেখতে প্রথমে শিক্ষাবর্ষ ও জামাত নির্বাচন করুন।</p>
                     </div>
                 </div>
             </div>
@@ -174,7 +355,7 @@
                         <div class="bg-white p-6 rounded-lg shadow-md">
                             <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">ব্যবস্থাপনা</h2>
                             <div class="space-y-4">
-                                <button id="openAddClassModalBtn" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-sm">নতুন জামাত যোগ করুন</button>
+                                <button id="openAddClassModalBtn" class="btn-gradient btn-gradient-blue w-full">নতুন জামাত যোগ করুন</button>
                             </div>
                         </div>
                     </div>
@@ -226,8 +407,8 @@
                             </select>
                         </div>
                         <div class="flex justify-end gap-4 pt-4">
-                            <button type="button" id="cancelAddClassBtn" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-lg font-semibold hover:bg-gray-400"> বাতিল</button>
-                            <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-green-700">জামাত যোগ করুন</button>
+                            <button type="button" id="cancelAddClassBtn" class="btn-gradient btn-gradient-gray"> বাতিল</button>
+                            <button type="submit" class="btn-gradient btn-gradient-green">জামাত যোগ করুন</button>
                         </div>
                     </form>
                 </div>
@@ -251,7 +432,7 @@
                             <label for="newKitabName" class="block mb-2 font-semibold text-gray-600">নতুন কিতাবের নাম</label>
                             <input type="text" id="newKitabName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                         </div>
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-indigo-700">নতুন কিতাব যোগ করুন</button>
+                        <button type="submit" class="btn-gradient btn-gradient-indigo w-full">নতুন কিতাব যোগ করুন</button>
                     </form>
                 </div>
             </div>
@@ -267,15 +448,24 @@
                         <button id="closeAddStudentModalBtn" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
                     </div>
                     <form id="addStudentForm" class="space-y-4">
+                        <div class="text-center mb-4">
+                            <img id="addStudentImagePreview" src="https://placehold.co/100x100/e2e8f0/a0aec0?text=ছবি" class="w-24 h-24 rounded-full mx-auto border-2 border-gray-300 object-cover">
+                            <label for="addStudentImage" class="mt-2 text-sm text-blue-600 cursor-pointer hover:underline">ছবি আপলোড করুন</label>
+                            <input type="file" id="addStudentImage" class="hidden" accept="image/*">
+                        </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label for="studentName" class="block mb-2 font-semibold text-gray-600">ছাত্রের নাম</label>
-                                <input type="text" id="studentName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                             <div>
+                                <label for="addStudentAcademicYear" class="block mb-2 font-semibold text-gray-600">শিক্ষাবর্ষ</label>
+                                <select id="addStudentAcademicYear" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500" required></select>
                             </div>
                             <div>
                                 <label for="studentRoll" class="block mb-2 font-semibold text-gray-600">রোল নম্বর</label>
                                 <input type="number" id="studentRoll" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                             </div>
+                        </div>
+                        <div>
+                            <label for="studentName" class="block mb-2 font-semibold text-gray-600">ছাত্রের নাম</label>
+                            <input type="text" id="studentName" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -307,12 +497,12 @@
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label for="thana" class="block mb-2 font-semibold text-gray-600">থানা</label>
-                                <input type="text" id="thana" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
                                 <label for="district" class="block mb-2 font-semibold text-gray-600">জেলা</label>
-                                <input type="text" id="district" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <select id="district" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"></select>
+                            </div>
+                             <div>
+                                <label for="thana" class="block mb-2 font-semibold text-gray-600">থানা</label>
+                                <select id="thana" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"></select>
                             </div>
                         </div>
                         <div>
@@ -320,8 +510,8 @@
                             <input type="tel" id="mobile" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div class="flex justify-end gap-4 pt-4">
-                            <button type="button" id="cancelAddStudentBtn" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-lg font-semibold hover:bg-gray-400"> বাতিল করুন</button>
-                            <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-green-700">ছাত্র যোগ করুন</button>
+                            <button type="button" id="cancelAddStudentBtn" class="btn-gradient btn-gradient-gray"> বাতিল করুন</button>
+                            <button type="submit" class="btn-gradient btn-gradient-green">ছাত্র যোগ করুন</button>
                         </div>
                     </form>
                 </div>
@@ -339,6 +529,11 @@
                     </div>
                     <form id="editStudentForm" class="space-y-4">
                         <input type="hidden" id="editStudentId">
+                        <div class="text-center mb-4">
+                            <img id="editStudentImagePreview" src="https://placehold.co/100x100/e2e8f0/a0aec0?text=ছবি" class="w-24 h-24 rounded-full mx-auto border-2 border-gray-300 object-cover">
+                            <label for="editStudentImage" class="mt-2 text-sm text-blue-600 cursor-pointer hover:underline">ছবি পরিবর্তন করুন</label>
+                            <input type="file" id="editStudentImage" class="hidden" accept="image/*">
+                        </div>
                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="editStudentName" class="block mb-2 font-semibold text-gray-600">ছাত্রের নাম</label>
@@ -378,13 +573,13 @@
                             <input type="text" id="editPostOffice" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label for="editThana" class="block mb-2 font-semibold text-gray-600">থানা</label>
-                                <input type="text" id="editThana" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
+                             <div>
                                 <label for="editDistrict" class="block mb-2 font-semibold text-gray-600">জেলা</label>
-                                <input type="text" id="editDistrict" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <select id="editDistrict" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"></select>
+                            </div>
+                             <div>
+                                <label for="editThana" class="block mb-2 font-semibold text-gray-600">থানা</label>
+                                <select id="editThana" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"></select>
                             </div>
                         </div>
                         <div>
@@ -392,10 +587,50 @@
                             <input type="tel" id="editMobile" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div class="flex justify-end gap-4 pt-4">
-                            <button type="button" id="cancelEditBtn" class="bg-gray-300 text-gray-800 py-2 px-6 rounded-lg font-semibold hover:bg-gray-400"> বাতিল করুন</button>
-                            <button type="submit" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700">পরিবর্তন সংরক্ষণ</button>
+                            <button type="button" id="cancelEditBtn" class="btn-gradient btn-gradient-gray"> বাতিল করুন</button>
+                            <button type="submit" class="btn-gradient btn-gradient-blue">পরিবর্তন সংরক্ষণ</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- View Student Modal -->
+        <div id="viewStudentModal" class="fixed inset-0 z-50 items-center justify-center hidden">
+            <div class="modal-backdrop fixed inset-0 bg-black opacity-50"></div>
+            <div class="bg-white rounded-lg shadow-xl m-4 sm:max-w-xl sm:w-full z-50">
+                <div class="p-6">
+                    <div class="flex justify-between items-center border-b pb-3 mb-6">
+                        <h2 class="text-2xl font-bold text-gray-700">ছাত্রের বিস্তারিত তথ্য</h2>
+                        <button id="closeViewModalBtn" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+                    </div>
+                    <div class="space-y-2 text-gray-800">
+                        <p><strong>নাম:</strong> <span id="viewStudentName"></span></p>
+                        <p><strong>রোল:</strong> <span id="viewStudentRoll"></span></p>
+                        <p><strong>পিতার নাম:</strong> <span id="viewFatherName"></span></p>
+                        <p><strong>মাতার নাম:</strong> <span id="viewMotherName"></span></p>
+                        <p><strong>অভিভাবক:</strong> <span id="viewGuardianName"></span></p>
+                        <p><strong>সম্পর্ক:</strong> <span id="viewGuardianRelation"></span></p>
+                        <p><strong>ঠিকানা:</strong> <span id="viewAddress"></span></p>
+                        <p><strong>মোবাইল:</strong> <span id="viewMobile"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Cropper Modal -->
+        <div id="cropperModal" class="fixed inset-0 z-[60] items-center justify-center hidden">
+            <div class="modal-backdrop fixed inset-0 bg-black opacity-75"></div>
+            <div class="bg-white rounded-lg shadow-xl m-4 sm:max-w-lg sm:w-full z-50">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-4">ছবি ক্রপ করুন</h2>
+                    <div id="cropper-container" class="mb-4">
+                        <img id="imageToCrop">
+                    </div>
+                    <div class="flex justify-end gap-4">
+                        <button type="button" id="cancelCropBtn" class="btn-gradient btn-gradient-gray">বাতিল</button>
+                        <button type="button" id="cropImageBtn" class="btn-gradient btn-gradient-green">ক্রপ করুন</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -450,6 +685,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, addDoc, getDocs, onSnapshot, setDoc, query, where, deleteDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -468,17 +704,22 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         // DOM Elements
         const tabs = {
+            about: document.getElementById('tab-about'),
             attendance: document.getElementById('tab-attendance'),
             students: document.getElementById('tab-students'),
             classes: document.getElementById('tab-classes'),
+            hems: document.getElementById('tab-hems'),
         };
         const views = {
+            about: document.getElementById('view-about'),
             attendance: document.getElementById('view-attendance'),
             students: document.getElementById('view-students'),
             classes: document.getElementById('view-classes'),
+            hems: document.getElementById('view-hems'),
         };
 
         // Class Management
@@ -503,12 +744,25 @@
         const cancelAddStudentBtn = document.getElementById('cancelAddStudentBtn');
         const addStudentForm = document.getElementById('addStudentForm');
         const classSelectForStudent = document.getElementById('classSelectForStudent');
+        const academicYearSelectForStudent = document.getElementById('academicYearSelectForStudent');
         const studentListDiv = document.getElementById('studentList');
         const downloadExcelBtn = document.getElementById('downloadExcelBtn');
         const editStudentModal = document.getElementById('editStudentModal');
         const editStudentForm = document.getElementById('editStudentForm');
         const closeEditModalBtn = document.getElementById('closeEditModalBtn');
         const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const viewStudentModal = document.getElementById('viewStudentModal');
+        const closeViewModalBtn = document.getElementById('closeViewModalBtn');
+        
+        // Cropper Elements
+        const cropperModal = document.getElementById('cropperModal');
+        const imageToCrop = document.getElementById('imageToCrop');
+        const cropImageBtn = document.getElementById('cropImageBtn');
+        const cancelCropBtn = document.getElementById('cancelCropBtn');
+        let cropper;
+        let croppedImageBlob = null;
+        let currentImagePreviewId = null;
+
 
         // Attendance Management
         const academicYearSelect = document.getElementById('academicYearSelect');
@@ -531,7 +785,75 @@
             "তাকমিল", "ফযিলত", "জালালাইন", "শরহে বেকায়া", "কাফিয়া",
             "হিদায়াতুন্নাহু", "নাহবেমীর", "মিঝান", "দহম", "ইয়াজ দহম"
         ];
-
+        
+        // --- District & Upazila Data ---
+        const districtsAndUpazilas = {
+            "বাগেরহাট": ["বাগেরহাট সদর","চিতলমারী","ফকিরহাট","কচুয়া","মোল্লাহাট","মোংলা","মোরেলগঞ্জ","রামপাল","শরণখোলা"],
+            "বান্দরবান": ["আলীকদম","বান্দরবান সদর","লামা","নাইক্ষ্যংছড়ি","রোয়াংছড়ি","রুমা","থানচি"],
+            "বরগুনা": ["আমতলী","বামনা","বরগুনা সদর","বেতাগী","পাথরঘাটা","তালতলী"],
+            "বরিশাল": ["আগৈলঝাড়া","বাবুগঞ্জ","বাকেরগঞ্জ","বানারীপাড়া","গৌরনদী","হিজলা","বরিশাল সদর","মেহেন্দিগঞ্জ","মুলাদী","উজিরপুর"],
+            "ভোলা": ["ভোলা সদর","বোরহানউদ্দিন","চরফ্যাশন","দৌলতখান","লালমোহন","মনপুরা","তজুমদ্দিন"],
+            "বগুড়া": ["আদমদীঘি","বগুড়া সদর","ধুনট","দুপচাঁচিয়া","গাবতলী","কাহালু","নন্দীগ্রাম","সারিয়াকান্দি","শাজাহানপুর","শেরপুর","শিবগঞ্জ","সোনাতলা"],
+            "ব্রাহ্মণবাড়িয়া": ["আখাউড়া","আশুগঞ্জ","বাঞ্ছারামপুর","ব্রাহ্মণবাড়িয়া সদর","কসবা","নবীনগর","নাসিরনগর","সরাইল","বিজয়নগর"],
+            "চাঁদপুর": ["চাঁদপুর সদর","ফরিদগঞ্জ","হাইমচর","হাজীগঞ্জ","কচুয়া","মতলব দক্ষিণ","মতলব উত্তর","শাহরাস্তি"],
+            "চাঁপাইনবাবগঞ্জ": ["ভোলাহাট","গোমস্তাপুর","নাচোল","নবাবগঞ্জ সদর","শিবগঞ্জ"],
+            "চট্টগ্রাম": ["আনোয়ারা","বাঁশখালী","বোয়ালখালী","চন্দনাইশ","ফটিকছড়ি","হাটহাজারী","কর্ণফুলী","লোহাগাড়া","মীরসরাই","পটিয়া","রাঙ্গুনিয়া","রাউজান","সন্দ্বীপ","সাতকানিয়া","সীতাকুণ্ড"],
+            "চুয়াডাঙ্গা": ["আলমডাঙ্গা","চুয়াডাঙ্গা সদর","দামুড়হুদা","জীবননগর"],
+            "কুমিল্লা": ["বরুড়া","ব্রাহ্মণপাড়া","বুড়িচং","চান্দিনা","চৌদ্দগ্রাম","দাউদকান্দি","দেবিদ্বার","হোমনা","লাকসাম","লালমাই","মনোহরগঞ্জ","মেঘনা","মুরাদনগর","নাঙ্গলকোট","কুমিল্লা সদর","কুমিল্লা সদর দক্ষিণ","তিতাস"],
+            "কক্সবাজার": ["চকরিয়া","কক্সবাজার সদর","কুতুবদিয়া","মহেশখালী","পেকুয়া","রামু","টেকনাফ","উখিয়া"],
+            "ঢাকা": ["ধামরাই","দোহার","কেরানীগঞ্জ","নবাবগঞ্জ","সাভার"],
+            "দিনাজপুর": ["বিরামপুর","বীরগঞ্জ","বোচাগঞ্জ","চিরিরবন্দর","ফুলবাড়ী","ঘোড়াঘাট","হাকিমপুর","দিনাজপুর সদর","কাহারোল","খানসামা","নবাবগঞ্জ","পার্বতীপুর"],
+            "ফরিদপুর": ["আলফাডাঙ্গা","ভাঙ্গা","বোয়ালমারী","চরভদ্রাসন","ফরিদপুর সদর","মধুখালী","নগরকান্দা","সদরপুর","সালথা"],
+            "ফেনী": ["ছাগলনাইয়া","দাগনভূঞা","ফেনী সদর","পরশুরাম","সোনাগাজী","ফুলগাজী"],
+            "গাইবান্ধা": ["ফুলছড়ি","গাইবান্ধা সদর","গোবিন্দগঞ্জ","পলাশবাড়ী","সাদুল্লাপুর","সাঘাটা","সুন্দরগঞ্জ"],
+            "গাজীপুর": ["গাজীপুর সদর","কালিয়াকৈর","কালীগঞ্জ","কাপাসিয়া","শ্রীপুর"],
+            "গোপালগঞ্জ": ["গোপালগঞ্জ সদর","কাশিয়ানী","কোটালীপাড়া","মুকসুদপুর","টুঙ্গিপাড়া"],
+            "হবিগঞ্জ": ["আজমিরীগঞ্জ","বাহুবল","বানিয়াচং","চুনারুঘাট","হবিগঞ্জ সদর","লাখাই","মাধবপুর","নবীগঞ্জ"],
+            "জামালপুর": ["বকশীগঞ্জ","দেওয়ানগঞ্জ","ইসলামপুর","জামালপুর সদর","মাদারগঞ্জ","মেলান্দহ","সরিষাবাড়ী"],
+            "যশোর": ["অভয়নগর","বাঘারপাড়া","চৌগাছা","ঝিকরগাছা","কেশবপুর","যশোর সদর","মণিরামপুর","শার্শা"],
+            "ঝালকাঠি": ["ঝালকাঠি সদর","কাঁঠালিয়া","নলছিটি","রাজাপুর"],
+            "ঝিনাইদহ": ["হরিণাকুণ্ডু","ঝিনাইদহ সদর","কালীগঞ্জ","কোটচাঁদপুর","মহেশপুর","শৈলকুপা"],
+            "জয়পুরহাট": ["আক্কেলপুর","জয়পুরহাট সদর","কালাই","ক্ষেতলাল","পাঁচবিবি"],
+            "খাগড়াছড়ি": ["দীঘিনালা","খাগড়াছড়ি সদর","লক্ষ্মীছড়ি","মহালছড়ি","মানিকছড়ি","মাটিরাঙ্গা","পানছড়ি","রামগড়"],
+            "খুলনা": ["বটিয়াঘাটা","দাকোপ","দিঘলিয়া","ডুমুরিয়া","কয়রা","পাইকগাছা","ফুলতলা","রূপসা","তেরখাদা"],
+            "কিশোরগঞ্জ": ["অষ্টগ্রাম","বাজিতপুর","ভৈরব","হোসেনপুর","ইটনা","করিমগঞ্জ","কটিয়াদী","কিশোরগঞ্জ সদর","কুলিয়ারচর","মিঠামইন","নিকলী","পাকুন্দিয়া","তাড়াইল"],
+            "কুড়িগ্রাম": ["ভুরুঙ্গামারী","চর রাজিবপুর","চিলমারী","ফুলবাড়ী","কুড়িগ্রাম সদর","নাগেশ্বরী","রাজারহাট","রৌমারী","উলিপুর"],
+            "কুষ্টিয়া": ["ভেড়ামারা","দৌলতপুর","খোকসা","কুমারখালী","কুষ্টিয়া সদর","মীরপুর"],
+            "লক্ষ্মীপুর": ["কমলনগর","লক্ষ্মীপুর সদর","রামগঞ্জ","রামগতি","রায়পুর"],
+            "লালমনিরহাট": ["আদিতমারী","হাতীবান্ধা","কালীগঞ্জ","লালমনিরহাট সদর","পাটগ্রাম"],
+            "মাদারীপুর": ["কালকিনি","মাদারীপুর সদর","রাজৈর","শিবচর"],
+            "মাগুরা": ["মাগুরা সদর","মহম্মদপুর","শালিখা","শ্রীপুর"],
+            "মানিকগঞ্জ": ["দৌলতপুর","ঘিওর","হরিরামপুর","মানিকগঞ্জ সদর","সাটুরিয়া","শিবালয়","সিঙ্গাইর"],
+            "মেহেরপুর": ["গাংনী","মেহেরপুর সদর","মুজিবনগর"],
+            "মৌলভীবাজার": ["বড়লেখা","জুড়ী","কমলগঞ্জ","কুলাউড়া","মৌলভীবাজার সদর","রাজনগর","শ্রীমঙ্গল"],
+            "মুন্সিগঞ্জ": ["গজারিয়া","লৌহজং","মুন্সিগঞ্জ সদর","সিরাজদিখান","শ্রীনগর","টঙ্গিবাড়ী"],
+            "ময়মনসিংহ": ["ভালুকা","ধোবাউড়া","ফুলবাড়ীয়া","গফরগাঁও","গৌরীপুর","হালুয়াঘাট","ঈশ্বরগঞ্জ","ময়মনসিংহ সদর","মুক্তাগাছা","নান্দাইল","ফুলপুর","তারাকান্দা","ত্রিশাল"],
+            "নওগাঁ": ["আত্রাই","বদলগাছী","ধামইরহাট","মান্দা","মহাদেবপুর","নওগাঁ সদর","নিয়ামতপুর","পত্নীতলা","পোরশা","রাণীনগর","সাপাহার"],
+            "নড়াইল": ["কালিয়া","লোহাগড়া","নড়াইল সদর"],
+            "নারায়ণগঞ্জ": ["আড়াইহাজার","বন্দর","নারায়ণগঞ্জ সদর","রূপগঞ্জ","সিদ্ধিরগঞ্জ","সোনারগাঁও"],
+            "নরসিংদী": ["বেলাবো","মনোহরদী","নরসিংদী সদর","পলাশ","রায়পুরা","শিবপুর"],
+            "নাটোর": ["বাগাতিপাড়া","বড়াইগ্রাম","গুরুদাসপুর","লালপুর","নাটোর সদর","সিংড়া","নলডাঙ্গা"],
+            "নেত্রকোনা": ["বারহাট্টা","দুর্গাপুর","কেন্দুয়া","কলমাকান্দা","মদন","মোহনগঞ্জ","নেত্রকোনা সদর","পূর্বধলা","খালিয়াজুরী","আটপাড়া"],
+            "নীলফামারী": ["ডিমলা","ডোমার","জলঢাকা","কিশোরগঞ্জ","নীলফামারী সদর","সৈয়দপুর"],
+            "নোয়াখালী": ["বেগমগঞ্জ","চাটখিল","কোম্পানীগঞ্জ","হাতিয়া","কবিরহাট","সেনবাগ","সোনাইমুড়ী","সুবর্ণচর","নোয়াখালী সদর"],
+            "পাবনা": ["আটঘরিয়া","বেড়া","ভাঙ্গুড়া","চাটমোহর","ফরিদপুর","ঈশ্বরদী","পাবনা সদর","সাঁথিয়া","সুজানগর"],
+            "পঞ্চগড়": ["আটোয়ারী","বোদা","দেবীগঞ্জ","পঞ্চগড় সদর","তেঁতুলিয়া"],
+            "পটুয়াখালী": ["বাউফল","দশমিনা","গলাচিপা","কলাপাড়া","মির্জাগঞ্জ","পটুয়াখালী সদর","রাঙ্গাবালী","দুমকি"],
+            "পিরোজপুর": ["ভান্ডারিয়া","ইন্দুরকানী","কাউখালী","মঠবাড়িয়া","নাজিরপুর","নেছারাবাদ","পিরোজপুর সদর"],
+            "রাজবাড়ী": ["বালিয়াকান্দি","গোয়ালন্দ","পাংশা","রাজবাড়ী সদর","কালুখালী"],
+            "রাজশাহী": ["বাঘা","বাগমারা","চারঘাট","দুর্গাপুর","গোদাগাড়ী","মোহনপুর","পবা","পুঠিয়া","তানোর"],
+            "রাঙ্গামাটি": ["বাঘাইছড়ি","বরকল","বেলাইছড়ি","কাপ্তাই","জুড়াইছড়ি","লংগদু","নানিয়ারচর","রাজস্থলী","রাঙ্গামাটি সদর","কাউখালী"],
+            "রংপুর": ["বদরগঞ্জ","গংগাচড়া","কাউনিয়া","রংপুর সদর","মিঠাপুকুর","পীরগাছা","পীরগঞ্জ","তারাগঞ্জ"],
+            "সাতক্ষীরা": ["আশাশুনি","দেবহাটা","কলারোয়া","কালীগঞ্জ","সাতক্ষীরা সদর","শ্যামনগর","তালা"],
+            "শরীয়তপুর": ["ভেদরগঞ্জ","ডামুড্যা","গোসাইরহাট","নড়িয়া","শরীয়তপুর সদর","জাজিরা"],
+            "শেরপুর": ["ঝিনাইগাতী","নকলা","নালিতাবাড়ী","শেরপুর সদর","শ্রীবরদী"],
+            "সিরাজগঞ্জ": ["বেলকুচি","চৌহালী","কামারখন্দ","কাজীপুর","রায়গঞ্জ","শাহজাদপুর","সিরাজগঞ্জ সদর","তাড়াশ","উল্লাপাড়া"],
+            "সুনামগঞ্জ": ["বিশ্বম্ভরপুর","ছাতক","দিরাই","দোয়ারাবাজার","জগন্নাথপুর","জামালগঞ্জ","সুনামগঞ্জ সদর","শাল্লা","তাহিরপুর","ধর্মপাশা","দক্ষিণ সুনামগঞ্জ"],
+            "সিলেট": ["বালাগঞ্জ","বিয়ানীবাজার","বিশ্বনাথ","কোম্পানীগঞ্জ","ফেঞ্চুগঞ্জ","গোলাপগঞ্জ","গোয়াইনঘাট","জৈন্তাপুর","কানাইঘাট","সিলেট সদর","জকিগঞ্জ","দক্ষিণ সুরমা"],
+            "টাঙ্গাইল": ["বাসাইল","ভুয়াপুর","দেলদুয়ার","ধনবাড়ী","ঘাটাইল","গোপালপুর","কালিহাতী","মধুপুর","মির্জাপুর","নাগরপুর","সখিপুর","টাঙ্গাইল সদর"],
+            "ঠাকুরগাঁও": ["বালিয়াডাঙ্গী","হরিপুর","পীরগঞ্জ","রাণীশংকৈল","ঠাকুরগাঁও সদর"],
+        };
+        
         // --- Authentication ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -550,7 +872,9 @@
             if (!userId) return;
             setupEventListeners();
             populateAcademicYears();
-            switchView('attendance');
+            populateDistricts('district');
+            populateDistricts('editDistrict');
+            switchView('about'); // Start with the about page
             loadClasses();
         }
 
@@ -577,6 +901,27 @@
                 options += `<option value="${yearValue}">${yearText}</option>`;
             }
             academicYearSelect.innerHTML = options;
+            academicYearSelectForStudent.innerHTML = options; // Populate the new dropdown
+            document.getElementById('addStudentAcademicYear').innerHTML = options; // Populate dropdown in add student modal
+        }
+
+        // --- District and Upazila Population ---
+        function populateDistricts(selectId) {
+            const districtSelect = document.getElementById(selectId);
+            districtSelect.innerHTML = '<option value="">জেলা নির্বাচন করুন</option>';
+            for (const district in districtsAndUpazilas) {
+                districtSelect.innerHTML += `<option value="${district}">${district}</option>`;
+            }
+        }
+
+        function populateUpazilas(districtName, upazilaSelectId) {
+            const upazilaSelect = document.getElementById(upazilaSelectId);
+            upazilaSelect.innerHTML = '<option value="">থানা নির্বাচন করুন</option>';
+            if (districtName && districtsAndUpazilas[districtName]) {
+                districtsAndUpazilas[districtName].forEach(upazila => {
+                    upazilaSelect.innerHTML += `<option value="${upazila}">${upazila}</option>`;
+                });
+            }
         }
 
         // --- View Switching Logic ---
@@ -612,11 +957,30 @@
             cancelEditBtn.addEventListener('click', closeEditModal);
             editStudentForm.addEventListener('submit', updateStudent);
             
+            closeViewModalBtn.addEventListener('click', () => viewStudentModal.style.display = 'none');
+            
             // Other Listeners
-            classSelectForStudent.addEventListener('change', (e) => loadStudents(e.target.value));
+            classSelectForStudent.addEventListener('change', () => loadStudents(academicYearSelectForStudent.value, classSelectForStudent.value));
+            academicYearSelectForStudent.addEventListener('change', () => loadStudents(academicYearSelectForStudent.value, classSelectForStudent.value));
             classSelectForAttendance.addEventListener('change', (e) => loadKitabsForAttendance(e.target.value));
             openAttendanceSheetBtn.addEventListener('click', renderAttendanceSheet);
             downloadExcelBtn.addEventListener('click', downloadAsExcel);
+
+            // District/Thana dropdown listeners
+            document.getElementById('district').addEventListener('change', (e) => populateUpazilas(e.target.value, 'thana'));
+            document.getElementById('editDistrict').addEventListener('change', (e) => populateUpazilas(e.target.value, 'editThana'));
+            
+            // Image Cropper Listeners
+            document.getElementById('addStudentImage').addEventListener('change', (e) => handleImageSelect(e, 'addStudentImagePreview'));
+            document.getElementById('editStudentImage').addEventListener('change', (e) => handleImageSelect(e, 'editStudentImagePreview'));
+            cropImageBtn.addEventListener('click', handleCrop);
+            cancelCropBtn.addEventListener('click', () => {
+                cropperModal.style.display = 'none';
+                if(cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+            });
         }
 
         // --- Class (Jamaat) & Kitab Management Functions ---
@@ -762,7 +1126,7 @@
             classSelectForAttendance.innerHTML = optionsHtml;
             
             if (activeClasses.length) {
-                loadStudents(classSelectForStudent.value);
+                loadStudents(academicYearSelectForStudent.value, classSelectForStudent.value);
                 loadKitabsForAttendance(classSelectForAttendance.value);
             } else {
                 studentListDiv.innerHTML = '<p class="text-gray-500">ছাত্র যোগ করার জন্য প্রথমে একটি জামাত সক্রিয় করুন।</p>';
@@ -862,19 +1226,22 @@
         function closeAddModal() {
             addStudentModal.style.display = 'none';
             addStudentForm.reset();
+            document.getElementById('addStudentImagePreview').src = 'https://placehold.co/100x100/e2e8f0/a0aec0?text=ছবি';
         }
 
         async function addStudent(event) {
             event.preventDefault();
             const classId = classSelectForStudent.value;
+            const academicYear = document.getElementById('addStudentAcademicYear').value;
             
-            if (!classId) {
-                showToast("অনুগ্রহ করে একটি জামাত নির্বাচন করুন।", true);
+            if (!classId || !academicYear) {
+                showToast("অনুগ্রহ করে শিক্ষাবর্ষ ও জামাত নির্বাচন করুন।", true);
                 return;
             }
 
             const studentData = {
                 classId,
+                academicYear,
                 name: document.getElementById('studentName').value.trim(),
                 roll: parseInt(document.getElementById('studentRoll').value.trim(), 10),
                 fatherName: document.getElementById('fatherName').value.trim(),
@@ -886,6 +1253,7 @@
                 thana: document.getElementById('thana').value.trim(),
                 district: document.getElementById('district').value.trim(),
                 mobile: document.getElementById('mobile').value.trim(),
+                imageUrl: ''
             };
 
             if (!studentData.name || !studentData.roll) {
@@ -894,52 +1262,80 @@
             }
 
             try {
-                const studentCollection = collection(db, `artifacts/${firestoreAppId}/public/data/students`);
-                await addDoc(studentCollection, studentData);
+                const studentDocRef = await addDoc(collection(db, `artifacts/${firestoreAppId}/public/data/students`), studentData);
+                
+                if (croppedImageBlob) {
+                    const imageUrl = await uploadStudentImage(croppedImageBlob, studentDocRef.id);
+                    await updateDoc(studentDocRef, { imageUrl });
+                }
+
                 showToast("ছাত্র সফলভাবে যোগ করা হয়েছে।");
                 closeAddModal();
             } catch (error) {
                 console.error("Error adding student: ", error);
                 showToast("ছাত্র যোগ করতে সমস্যা হয়েছে।", true);
+            } finally {
+                croppedImageBlob = null;
             }
         }
 
-        function loadStudents(classId) {
+        function loadStudents(academicYear, classId) {
             if (unsubscribeStudents) unsubscribeStudents();
-            if (!classId) {
-                studentListDiv.innerHTML = '<p class="text-gray-500">তালিকা দেখতে প্রথমে একটি জামাত নির্বাচন করুন।</p>';
+            if (!classId || !academicYear) {
+                studentListDiv.innerHTML = '<p class="text-gray-500 col-span-full">তালিকা দেখতে শিক্ষাবর্ষ ও জামাত নির্বাচন করুন।</p>';
                 currentStudentsData = [];
                 return;
             }
             
-            studentListDiv.innerHTML = '<p class="text-gray-500">লোড হচ্ছে...</p>';
+            studentListDiv.innerHTML = '<p class="text-gray-500 col-span-full">লোড হচ্ছে...</p>';
             const studentCollection = collection(db, `artifacts/${firestoreAppId}/public/data/students`);
-            const q = query(studentCollection, where("classId", "==", classId));
+            const q = query(studentCollection, where("classId", "==", classId), where("academicYear", "==", academicYear));
 
             unsubscribeStudents = onSnapshot(q, (snapshot) => {
                 const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 students.sort((a, b) => a.roll - b.roll);
                 currentStudentsData = students;
                 
-                studentListDiv.innerHTML = students.length ? '' : '<p class="text-gray-500">এই জামাতে কোনো ছাত্র পাওয়া যায়নি।</p>';
+                if (students.length === 0) {
+                    studentListDiv.innerHTML = '<p class="text-gray-500 col-span-full">এই জামাতে কোনো ছাত্র পাওয়া যায়নি।</p>';
+                    return;
+                }
+
+                studentListDiv.innerHTML = ''; // Clear previous content
+                const selectedJamaatName = classSelectForStudent.options[classSelectForStudent.selectedIndex].text;
+
                 students.forEach(std => {
-                    const div = document.createElement('div');
-                    div.className = 'flex justify-between items-center bg-gray-100 p-3 rounded-lg';
-                    div.innerHTML = `
-                        <div>
-                            <span class="font-bold text-lg">${std.roll}.</span>
-                            <span class="font-semibold ml-2">${std.name}</span>
+                    const card = document.createElement('div');
+                    card.className = 'bg-gradient-to-br from-white to-blue-50 rounded-lg shadow-lg p-4 text-center relative group transition-all duration-300 hover:shadow-xl';
+                    
+                    const profileImage = std.imageUrl 
+                        ? std.imageUrl 
+                        : `https://placehold.co/100x100/3b82f6/ffffff?text=${std.name.charAt(0)}`;
+
+                    card.innerHTML = `
+                        <div class="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <button data-id="${std.id}" class="delete-student-btn p-1.5 bg-red-100 text-red-600 rounded-full hover:bg-red-200" title="মুছে ফেলুন">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <button data-id="${std.id}" class="edit-student-btn p-1.5 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200" title="সম্পাদনা করুন">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                            </button>
+                             <button data-id="${std.id}" class="view-student-btn p-1.5 bg-green-100 text-green-600 rounded-full hover:bg-green-200" title="বিস্তারিত দেখুন">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 11a1 1 0 112 0v4a1 1 0 11-2 0v-4zm2-4a1 1 0 10-2 0v.01a1 1 0 102 0V7z" clip-rule="evenodd" /></svg>
+                            </button>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <button data-id="${std.id}" class="edit-student-btn text-blue-600 hover:text-blue-800" title="সম্পাদনা করুন">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
-                            </button>
-                            <button data-id="${std.id}" class="delete-student-btn text-red-600 hover:text-red-800" title="মুছে ফেলুন">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                            </button>
+                        <img src="${profileImage}" alt="ছাত্রের ছবি" class="w-24 h-24 rounded-full mx-auto mb-3 border-4 border-white shadow-md object-cover">
+                        <div class="border border-gray-200 rounded-full px-4 py-1 my-2 inline-block bg-white/50">
+                            <h3 class="font-bold text-md text-gray-800 truncate">${std.name}</h3>
+                        </div>
+                        <div class="flex justify-between items-center text-sm mt-2 px-2">
+                            <span class="bg-blue-100 text-blue-700 font-semibold px-3 py-1 rounded-full text-xs">${selectedJamaatName}</span>
+                            <div class="border border-gray-200 bg-gray-100 rounded-full px-3 py-1">
+                                <span class="text-gray-600 font-bold text-xs">রোল: ${std.roll}</span>
+                            </div>
                         </div>
                     `;
-                    studentListDiv.appendChild(div);
+                    studentListDiv.appendChild(card);
                 });
                 
                 document.querySelectorAll('.delete-student-btn').forEach(button => {
@@ -948,10 +1344,13 @@
                 document.querySelectorAll('.edit-student-btn').forEach(button => {
                     button.addEventListener('click', (e) => openEditModal(e.currentTarget.dataset.id));
                 });
+                document.querySelectorAll('.view-student-btn').forEach(button => {
+                    button.addEventListener('click', (e) => openViewModal(e.currentTarget.dataset.id));
+                });
 
             }, (error) => {
                 console.error("Error loading students:", error);
-                studentListDiv.innerHTML = '<p class="text-red-500">ছাত্রদের তালিকা লোড করতে সমস্যা হয়েছে।</p>';
+                studentListDiv.innerHTML = '<p class="text-red-500 col-span-full">ছাত্রদের তালিকা লোড করতে সমস্যা হয়েছে।</p>';
                 currentStudentsData = [];
             });
         }
@@ -980,8 +1379,16 @@
             document.getElementById('editGuardianRelation').value = student.guardianRelation || '';
             document.getElementById('editVillage').value = student.village || '';
             document.getElementById('editPostOffice').value = student.postOffice || '';
-            document.getElementById('editThana').value = student.thana || '';
-            document.getElementById('editDistrict').value = student.district || '';
+            document.getElementById('editStudentImagePreview').src = student.imageUrl || 'https://placehold.co/100x100/e2e8f0/a0aec0?text=ছবি';
+            
+            const districtSelect = document.getElementById('editDistrict');
+            districtSelect.value = student.district || '';
+            populateUpazilas(student.district, 'editThana');
+            
+            setTimeout(() => {
+                document.getElementById('editThana').value = student.thana || '';
+            }, 100);
+            
             document.getElementById('editMobile').value = student.mobile || '';
 
             editStudentModal.style.display = 'flex';
@@ -989,6 +1396,23 @@
 
         function closeEditModal() {
             editStudentModal.style.display = 'none';
+        }
+
+        function openViewModal(studentId) {
+            const student = currentStudentsData.find(s => s.id === studentId);
+            if (!student) return;
+            
+            document.getElementById('viewStudentName').innerText = student.name || 'N/A';
+            document.getElementById('viewStudentRoll').innerText = student.roll || 'N/A';
+            document.getElementById('viewFatherName').innerText = student.fatherName || 'N/A';
+            document.getElementById('viewMotherName').innerText = student.motherName || 'N/A';
+            document.getElementById('viewGuardianName').innerText = student.guardianName || 'N/A';
+            document.getElementById('viewGuardianRelation').innerText = student.guardianRelation || 'N/A';
+            const address = `${student.village || ''}, ${student.postOffice || ''}, ${student.thana || ''}, ${student.district || ''}`;
+            document.getElementById('viewAddress').innerText = address;
+            document.getElementById('viewMobile').innerText = student.mobile || 'N/A';
+
+            viewStudentModal.style.display = 'flex';
         }
 
         async function updateStudent(event) {
@@ -1010,6 +1434,10 @@
             };
 
             try {
+                if (croppedImageBlob) {
+                    updatedData.imageUrl = await uploadStudentImage(croppedImageBlob, studentId);
+                }
+
                 const studentDocRef = doc(db, `artifacts/${firestoreAppId}/public/data/students`, studentId);
                 await updateDoc(studentDocRef, updatedData);
                 showToast("ছাত্রের তথ্য সফলভাবে আপডেট করা হয়েছে।");
@@ -1017,6 +1445,54 @@
             } catch (error) {
                 console.error("Error updating student:", error);
                 showToast("ছাত্রের তথ্য আপডেট করতে সমস্যা হয়েছে।", true);
+            } finally {
+                croppedImageBlob = null;
+            }
+        }
+        
+        async function uploadStudentImage(file, studentId) {
+            const storageRef = ref(storage, `students_pictures/${studentId}`);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
+        }
+        
+        function handleImageSelect(event, previewId) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            currentImagePreviewId = previewId;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageToCrop.src = e.target.result;
+                cropperModal.style.display = 'flex';
+                
+                if(cropper) {
+                    cropper.destroy();
+                }
+                
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    background: false,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleCrop() {
+            if (cropper) {
+                cropper.getCroppedCanvas({
+                    width: 256,
+                    height: 256,
+                }).toBlob((blob) => {
+                    croppedImageBlob = blob;
+                    const previewUrl = URL.createObjectURL(blob);
+                    document.getElementById(currentImagePreviewId).src = previewUrl;
+                    cropperModal.style.display = 'none';
+                    cropper.destroy();
+                    cropper = null;
+                });
             }
         }
 
@@ -1062,7 +1538,7 @@
             attendanceSheetDiv.innerHTML = '<p class="text-gray-500">ছাত্রদের তালিকা লোড হচ্ছে...</p>';
 
             const studentCollection = collection(db, `artifacts/${firestoreAppId}/public/data/students`);
-            const studentQuery = query(studentCollection, where("classId", "==", classId));
+            const studentQuery = query(studentCollection, where("classId", "==", classId), where("academicYear", "==", academicYearSelect.value));
             const studentSnapshot = await getDocs(studentQuery);
             const students = studentSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             students.sort((a, b) => a.roll - b.roll);
@@ -1103,24 +1579,24 @@
 
             const studentRows = students.map(student => {
                 const status = attendanceRecords[student.id];
-                const presentClass = status === 'present' ? 'present' : '';
-                const absentClass = status === 'absent' ? 'absent' : '';
+                const presentClass = status === 'present' ? 'active' : '';
+                const absentClass = status === 'absent' ? 'active' : '';
                 return `
-                    <div class="flex justify-between items-center p-3 border-b hover:bg-gray-50">
+                    <div class="flex justify-between items-center p-3 border-b bg-white rounded-md shadow-sm mb-2">
                         <div>
-                            <span class="font-bold text-gray-700 w-8 inline-block">${student.roll}.</span>
-                            <span class="ml-4 text-gray-800">${student.name}</span>
+                            <span class="font-bold text-gray-800 w-10 inline-block">${student.roll}.</span>
+                            <span class="ml-4 text-lg text-gray-900">${student.name}</span>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <button data-studentid="${student.id}" data-status="present" class="attendance-icon ${presentClass}" title="উপস্থিত">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        <div class="flex items-center gap-3">
+                            <button data-studentid="${student.id}" data-status="present" class="attendance-action-btn present-btn ${presentClass}">
+                                <span class="btn-text">উপস্থিত</span>
+                                <svg class="icon tick-icon" viewBox="0 0 24 24">
+                                    <path fill="none" d="M5,13 l4,4 L19,7"></path>
                                 </svg>
                             </button>
-                            <button data-studentid="${student.id}" data-status="absent" class="attendance-icon ${absentClass}" title="অনুপস্থিত">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                            <button data-studentid="${student.id}" data-status="absent" class="attendance-action-btn absent-btn ${absentClass}">
+                                <span class="btn-text">অনুপস্থিত</span>
+                                <span class="icon cross-icon">🚫</span>
                             </button>
                         </div>
                     </div>
@@ -1132,13 +1608,13 @@
                 <div class="flex justify-end mb-4">
                     <button id="downloadPdfBtn" class="no-print bg-rose-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-rose-700 transition-colors duration-300 shadow-sm">PDF রিপোর্ট ডাউনলোড</button>
                 </div>
-                <div class="bg-white rounded-lg shadow">
+                <div class="space-y-2">
                     ${studentRows}
                 </div>
             `;
 
             document.getElementById('downloadPdfBtn').addEventListener('click', () => generateAndDownloadPdf(students, attendanceRecords));
-            document.querySelectorAll('.attendance-icon').forEach(button => {
+            document.querySelectorAll('.attendance-action-btn').forEach(button => {
                 button.addEventListener('click', handleAttendanceMarking);
             });
         }
@@ -1199,6 +1675,18 @@
             const button = event.currentTarget;
             const studentId = button.dataset.studentid;
             const status = button.dataset.status;
+            
+            // Optimistic UI update
+            const buttonContainer = button.parentElement;
+            const previousState = {
+                present: buttonContainer.querySelector('.present-btn').classList.contains('active'),
+                absent: buttonContainer.querySelector('.absent-btn').classList.contains('active'),
+            };
+
+            buttonContainer.querySelectorAll('.attendance-action-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
 
             const classId = classSelectForAttendance.value;
             const academicYear = academicYearSelect.value;
@@ -1216,26 +1704,15 @@
                 await setDoc(doc(db, `artifacts/${firestoreAppId}/public/data/attendance`, attendanceDocId), {
                     studentId, classId, academicYear, kitab, date, status
                 });
-                
-                const iconContainer = button.parentElement;
-                iconContainer.querySelectorAll('.attendance-icon').forEach(icon => {
-                    icon.classList.remove('present', 'absent');
-                });
-                
-                button.classList.add(status);
-
-                if (status === 'present') {
-                    button.classList.add('tick-animation');
-                    button.addEventListener('animationend', () => {
-                        button.classList.remove('tick-animation');
-                    }, { once: true });
-                }
-
-                showToast("হাজিরা আপডেট হয়েছে।");
-
             } catch (error) {
-                console.error("Error saving attendance: ", error);
+                // Revert UI on error
                 showToast("হাজিরা সংরক্ষণ করতে সমস্যা হয়েছে।", true);
+                buttonContainer.querySelectorAll('.attendance-action-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                if(previousState.present) buttonContainer.querySelector('.present-btn').classList.add('active');
+                if(previousState.absent) buttonContainer.querySelector('.absent-btn').classList.add('active');
+                console.error("Error saving attendance: ", error);
             }
         }
 
