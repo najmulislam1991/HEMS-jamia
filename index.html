@@ -83,6 +83,14 @@
             animation: tick-pop 0.3s ease-in-out;
         }
 
+        /* PDF Template Styling */
+        #pdf-report-template {
+            position: absolute;
+            left: -9999px;
+            top: auto;
+            width: 11.7in; /* A4 Landscape width */
+        }
+
         @media print {
             .no-print {
                 display: none !important;
@@ -392,8 +400,8 @@
             </div>
         </div>
 
-        <!-- PDF Report Template (Hidden) -->
-        <div id="pdf-report-template" class="hidden">
+        <!-- PDF Report Template -->
+        <div id="pdf-report-template" class="pdf-template">
             <div class="solaiman p-8">
                 <div class="text-center mb-8">
                     <h1 id="pdf-madrasa-name" class="text-3xl font-bold"></h1>
