@@ -224,6 +224,9 @@
                 <button data-view="home" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
                     <span>হোম</span>
                 </button>
+                <button data-view="about" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
+                    <span>জামিয়া পরিচিতি</span>
+                </button>
                 <button data-view="attendance" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 border-b-4 rounded-md font-semibold transition-colors duration-300">
                     <span>হাজিরা গ্রহণ</span>
                 </button>
@@ -307,12 +310,12 @@
                         <h3 class="text-xl font-bold mb-2">জামাত ও কিতাব</h3>
                         <p class="text-gray-600 text-sm">জামাত ও কিতাব যোগ, সম্পাদনা ও পরিচালনা করুন।</p>
                     </div>
-                    <div id="card-about" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer text-center">
-                        <div class="bg-purple-100 text-purple-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" /></svg>
+                    <div id="card-hems" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer text-center">
+                        <div class="bg-orange-100 text-orange-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">জামিয়া পরিচিতি</h3>
-                        <p class="text-gray-600 text-sm">মাদ্রাসার পরিচিতি ও যোগাযোগের তথ্য।</p>
+                        <h3 class="text-xl font-bold mb-2">HEMS সম্পর্কে</h3>
+                        <p class="text-gray-600 text-sm">সিস্টেম এবং এর কার্যকারিতা সম্পর্কে জানুন।</p>
                     </div>
                 </div>
             </div>
@@ -779,14 +782,6 @@
         const storage = getStorage(app);
 
         // DOM Elements
-        const tabs = {
-            home: document.getElementById('tab-home-desktop'),
-            about: document.getElementById('tab-about'),
-            attendance: document.getElementById('tab-attendance'),
-            students: document.getElementById('tab-students'),
-            classes: document.getElementById('tab-classes'),
-            hems: document.getElementById('tab-hems'),
-        };
         const views = {
             home: document.getElementById('view-home'),
             about: document.getElementById('view-about'),
@@ -1053,7 +1048,7 @@
             document.getElementById('card-attendance').addEventListener('click', () => switchView('attendance'));
             document.getElementById('card-students').addEventListener('click', () => switchView('students'));
             document.getElementById('card-classes').addEventListener('click', () => switchView('classes'));
-            document.getElementById('card-about').addEventListener('click', () => switchView('about'));
+            document.getElementById('card-hems').addEventListener('click', () => switchView('hems'));
             
             // Jamaat & Kitab Modals
             openAddClassModalBtn.addEventListener('click', () => addClassModal.style.display = 'flex');
