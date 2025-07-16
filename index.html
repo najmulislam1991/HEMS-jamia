@@ -18,6 +18,7 @@
     <!-- PDF & Excel Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Hind Siliguri', sans-serif;
@@ -71,14 +72,15 @@
         /* New Attendance Button Styles */
         .attendance-action-btn {
             position: relative;
-            padding: 8px 16px;
+            padding: 4px 12px;
             border-radius: 9999px; /* Fully rounded */
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             overflow: hidden;
             border: 2px solid transparent;
-            width: 120px;
+            width: 90px;
+            font-size: 0.875rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -92,7 +94,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             opacity: 0;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             line-height: 1;
         }
         
@@ -119,8 +121,8 @@
             opacity: 1;
         }
         .present-btn .tick-icon {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             stroke: currentColor;
             stroke-width: 4; 
             stroke-linecap: round;
@@ -163,11 +165,12 @@
         }
 
         /* PDF Template Styling */
-        #pdf-report-template {
+        .pdf-template {
             position: absolute;
             left: -9999px;
             top: auto;
             width: 11.7in; /* A4 Landscape width */
+            background: white;
         }
         
         [contenteditable]:focus {
@@ -215,7 +218,8 @@
             transition: all 0.3s ease-in-out;
         }
         .dashboard-card:hover {
-            box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+            transform: translateY(-5px);
+            box-shadow: 10px 10px 20px #a3b1c6, -10px -10px 20px #ffffff;
         }
 
         @media print {
@@ -232,7 +236,7 @@
         
         <!-- Header -->
         <header class="bg-white shadow-md rounded-lg p-4 mb-8 flex justify-between items-center">
-            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">Hasania Exam Management System</h1>
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">HEMS</h1>
             <!-- Desktop Navigation Tabs -->
             <nav id="desktop-nav" class="hidden md:flex flex-wrap justify-center gap-2">
                 <button data-view="home" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 rounded-full font-semibold">
@@ -320,38 +324,8 @@
                 </div>
             </div>
             
-            <!-- About View -->
+            <!-- About View (This view is now unused but kept for potential future use) -->
             <div id="view-about" class="view">
-                <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
-                    <div class="flex items-center gap-4 border-b pb-4 mb-4">
-                        <div class="bg-blue-600 text-white rounded-full h-16 w-16 flex items-center justify-center text-4xl font-bold">
-                            H
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-800">জামিয়া হাসানিয়া কওমীয়া ও এতিমখানা</h2>
-                            <p class="text-gray-600">রঘুনাথপুর, শিঙ্গাশোলপুর, কালিয়া, নড়াইল।</p>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <p contenteditable="true" class="text-gray-700 leading-relaxed p-2 border border-transparent hover:border-gray-300 rounded-md transition-all">
-                            এখানে জামিয়া সম্পর্কে বিস্তারিত লিখুন। এই লেখাটি পরিবর্তনযোগ্য। আপনি এখানে ক্লিক করে আপনার মাদ্রাসার ইতিহাস, লক্ষ্য ও উদ্দেশ্য, এবং অন্যান্য গুরুত্বপূর্ণ তথ্য যোগ করতে পারেন।
-                        </p>
-                        <div class="border-t pt-4 space-y-2">
-                            <p class="flex items-center gap-2 text-gray-700">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
-                                লোকেশন: রঘুনাথপুর, কালিয়া, নড়াইল
-                            </p>
-                            <p class="flex items-center gap-2 text-gray-700">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
-                                যোগাযোগ: ০১XXXXXXXXX
-                            </p>
-                            <p class="flex items-center gap-2 text-gray-700">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 2.006l7.997 3.878A2 2 0 0118 8.71V15a2 2 0 01-2 2H4a2 2 0 01-2-2V8.71a2 2 0 01.003-1.126zM10 12a2 2 0 100-4 2 2 0 000 4z" /></svg>
-                                ইমেইল: contact@jamiahasania.com
-                            </p>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <!-- HEMS About View -->
@@ -995,14 +969,14 @@
 
         // --- View Switching Logic ---
         function switchView(viewName) {
-            Object.values(views).forEach(view => view.classList.remove('active'));
+            Object.values(views).forEach(view => {
+                if(view) view.classList.remove('active')
+            });
             document.querySelectorAll('#desktop-nav .tab-button').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('#mobile-sidebar .sidebar-link').forEach(link => link.classList.remove('active'));
 
             if (views[viewName]) {
                 views[viewName].classList.add('active');
-            } else if (viewName === "home") {
-                 views.home.classList.add('active');
             }
             
             const desktopTab = document.querySelector(`#desktop-nav button[data-view="${viewName}"]`);
