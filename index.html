@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hasania Exam Management System (HEMS)</title>
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%233b82f6'/><text x='50' y='50' font-size='70' font-weight='bold' fill='white' text-anchor='middle' dy='.3em'>H</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%2360a5fa;stop-opacity:1' /><stop offset='100%25' style='stop-color:%233b82f6;stop-opacity:1' /></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23grad)' /><text x='50' y='50' font-size='70' font-weight='bold' fill='white' text-anchor='middle' dy='.3em'>H</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for SolaimanLipi -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -221,6 +221,13 @@
             transform: translateY(-5px);
             box-shadow: 10px 10px 20px #a3b1c6, -10px -10px 20px #ffffff;
         }
+        .kitab-item {
+            cursor: grab;
+        }
+        .kitab-item.dragging {
+            opacity: 0.5;
+            background: #c7d2fe;
+        }
 
         @media print {
             .no-print {
@@ -236,7 +243,7 @@
         
         <!-- Header -->
         <header class="bg-white shadow-md rounded-lg p-4 mb-8 flex justify-between items-center">
-            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">HEMS</h1>
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">Hasania Exam Management System (HEMS)</h1>
             <!-- Desktop Navigation Tabs -->
             <nav id="desktop-nav" class="hidden md:flex flex-wrap justify-center gap-2">
                 <button data-view="home" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 rounded-full font-semibold">
@@ -299,7 +306,10 @@
         <main>
             <!-- Home View -->
             <div id="view-home" class="view">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <div id="slideshow-container" class="relative w-full max-w-5xl mx-auto mb-8 h-48 bg-blue-500 rounded-lg shadow-lg overflow-hidden text-white flex items-center justify-center">
+                    <div id="slide-text" class="text-2xl md:text-3xl font-bold text-center p-4 transition-opacity duration-1000 ease-in-out"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
                     <div id="card-attendance" class="dashboard-card p-6 rounded-lg cursor-pointer text-center bg-gradient-to-br from-blue-400 to-blue-600 text-white">
                         <div class="mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>
@@ -321,21 +331,31 @@
                         <h3 class="text-xl font-bold mb-2">জামাত ও কিতাব</h3>
                         <p class="text-sm opacity-90">জামাত ও কিতাব যোগ, সম্পাদনা ও পরিচালনা করুন।</p>
                     </div>
+                     <div id="card-hems" class="dashboard-card p-6 rounded-lg cursor-pointer text-center bg-gradient-to-br from-purple-400 to-purple-600 text-white">
+                        <div class="mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">HEMS সম্পর্কে</h3>
+                        <p class="text-sm opacity-90">সিস্টেম এবং এর কার্যকারিতা সম্পর্কে জানুন।</p>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- About View (This view is now unused but kept for potential future use) -->
-            <div id="view-about" class="view">
             </div>
             
             <!-- HEMS About View -->
             <div id="view-hems" class="view">
                  <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
-                    <h2 class="text-2xl font-bold text-gray-800 border-b pb-4 mb-4">HEMS সম্পর্কে</h2>
-                    <p class="text-gray-700 leading-relaxed">
+                    <div class="flex items-center mb-6 border-b pb-3">
+                        <button class="back-to-home-btn p-2 rounded-full hover:bg-gray-200 transition-colors -ml-2">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                        </button>
+                        <h2 class="text-2xl font-bold text-gray-700 ml-2">HEMS সম্পর্কে</h2>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed text-justify">
                         Hasania Exam Management System (HEMS) একটি আধুনিক ও ডিজিটাল সমাধান, যা মাদ্রাসার পরীক্ষা ও হাজিরা ব্যবস্থাপনাকে সহজ করার জন্য তৈরি করা হয়েছে। এর মাধ্যমে জামাত ও কিতাব পরিচালনা, ছাত্র ভর্তি, দৈনিক হাজিরা গ্রহণ এবং রিপোর্ট তৈরি করার মতো গুরুত্বপূর্ণ কাজগুলো খুব সহজেই করা যায়।
                     </p>
-                    <p class="text-gray-700 leading-relaxed mt-4">
+                    <p class="text-gray-700 leading-relaxed mt-4 text-justify">
                         এই সিস্টেমটি ব্যবহার করে আপনি ছাত্রদের তথ্য ডিজিটালভাবে সংরক্ষণ করতে পারেন এবং যেকোনো সময় তাদের বিস্তারিত তথ্যসহ Excel ফাইল বা হাজিরা রিপোর্ট PDF আকারে ডাউনলোড করতে পারেন।
                     </p>
                 </div>
@@ -345,7 +365,14 @@
             <!-- Attendance View -->
             <div id="view-attendance" class="view">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-3">হাজিরা খাতা</h2>
+                    <div class="flex items-center mb-6 border-b pb-3">
+                        <button class="back-to-home-btn p-2 rounded-full hover:bg-gray-200 transition-colors -ml-2">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                        </button>
+                        <h2 class="text-2xl font-bold text-gray-700 ml-2">হাজিরা খাতা</h2>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
                         <div>
                             <label for="academicYearSelect" class="block mb-2 font-semibold text-gray-600">শিক্ষাবর্ষ</label>
@@ -373,7 +400,14 @@
             <div id="view-students" class="view">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <div class="flex flex-col sm:flex-row justify-between items-center border-b pb-3 mb-6 gap-4">
-                        <h2 class="text-2xl font-bold text-gray-700">ছাত্রদের তালিকা</h2>
+                         <div class="flex items-center">
+                            <button class="back-to-home-btn p-2 rounded-full hover:bg-gray-200 transition-colors -ml-2">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                            </button>
+                            <h2 class="text-2xl font-bold text-gray-700 ml-2">ছাত্রদের তালিকা</h2>
+                        </div>
                         <div class="flex gap-4">
                             <button id="openAddStudentModalBtn" class="btn-gradient btn-gradient-green">নতুন ছাত্র যোগ করুন</button>
                             <button id="downloadExcelBtn" class="btn-gradient btn-gradient-emerald">Excel ডাউনলোড</button>
@@ -391,7 +425,7 @@
                             </select>
                         </div>
                     </div>
-                    <div id="studentList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <div id="studentList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         <p class="text-gray-500 col-span-full">তালিকা দেখতে প্রথমে শিক্ষাবর্ষ ও জামাত নির্বাচন করুন।</p>
                     </div>
                 </div>
@@ -399,6 +433,13 @@
 
             <!-- Classes View -->
             <div id="view-classes" class="view">
+                 <div class="flex items-center mb-4">
+                    <button class="back-to-home-btn p-2 rounded-full hover:bg-gray-200 transition-colors">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </button>
+                </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-1">
                         <div class="bg-white p-6 rounded-lg shadow-md">
@@ -758,7 +799,6 @@
         // DOM Elements
         const views = {
             home: document.getElementById('view-home'),
-            about: document.getElementById('view-about'),
             attendance: document.getElementById('view-attendance'),
             students: document.getElementById('view-students'),
             classes: document.getElementById('view-classes'),
@@ -919,6 +959,7 @@
             populateDistricts('editDistrict');
             switchView('home'); // Start with the home page
             loadClasses();
+            startSlideshow(); // Call the slideshow function
         }
 
         // --- Toast Notification Logic ---
@@ -988,6 +1029,10 @@
 
         // --- Event Listeners Setup ---
         function setupEventListeners() {
+            document.querySelectorAll('.back-to-home-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchView('home'));
+            });
+            
             document.querySelectorAll('#desktop-nav .tab-button').forEach(tab => {
                 tab.addEventListener('click', () => switchView(tab.dataset.view));
             });
@@ -1799,6 +1844,37 @@
                 if(previousState.absent) buttonContainer.querySelector('.absent-btn').classList.add('active');
                 console.error("Error saving attendance: ", error);
             }
+        }
+
+        // --- Slideshow ---
+        const slideshowContainer = document.getElementById('slideshow-container');
+        const slideTextElement = document.getElementById('slide-text');
+        const welcomeMessages = [
+            "হেদায়াত এক্সাম ম্যানেজমেন্ট সিস্টেমে আপনাকে স্বাগতম",
+            "আপনার মাদ্রাসাকে ডিজিটাল করুন",
+            "ছাত্রদের উপস্থিতি এবং পরীক্ষার ফলাফল পরিচালনা করুন সহজেই",
+            "যেকোনো প্রয়োজনে আমাদের সাথে যোগাযোগ করুন"
+        ];
+        let slideIndex = 0;
+
+        function startSlideshow() {
+            if (!slideTextElement) return;
+
+            function showSlides() {
+                slideTextElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    slideTextElement.textContent = welcomeMessages[slideIndex];
+                    slideTextElement.style.opacity = '1';
+                    slideIndex++;
+                    if (slideIndex >= welcomeMessages.length) {
+                        slideIndex = 0;
+                    }
+                }, 1000);
+            }
+
+            showSlides();
+            setInterval(showSlides, 3000);
         }
 
     </script>
