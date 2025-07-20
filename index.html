@@ -29,13 +29,20 @@
         }
         .tab-button {
             transition: all 0.3s ease-in-out;
-            background: #e0e5ec;
-            box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+            background-color: #e5e7eb;
+            color: #374151;
+            font-weight: 600;
+            border-radius: 9999px;
+            padding: 0.75rem 1.5rem;
             border: none;
         }
+        .tab-button:hover {
+            background-color: #d1d5db;
+        }
         .tab-button.active {
-            box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
-            color: #3b82f6;
+            color: white;
+            background-image: linear-gradient(to right, #3b82f6, #60a5fa);
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
         }
         .sidebar-link.active {
             background-color: #4b5563;
@@ -228,6 +235,12 @@
             opacity: 0.5;
             background: #c7d2fe;
         }
+        .text-gradient {
+            background: linear-gradient(to right, #fde047, #f97316);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
         @media print {
             .no-print {
@@ -254,6 +267,9 @@
                 </button>
                 <button data-view="students" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 rounded-full font-semibold">
                     <span>ছাত্র ব্যবস্থাপনা</span>
+                </button>
+                 <button data-view="teachers" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 rounded-full font-semibold">
+                    <span>শিক্ষক ব্যবস্থাপনা</span>
                 </button>
                 <button data-view="classes" class="tab-button flex items-center justify-center gap-2 text-center py-3 px-6 rounded-full font-semibold">
                     <span>জামাত ও কিতাব</span>
@@ -288,6 +304,10 @@
                 <button data-view="students" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0110 15c-1.55 0-2.958-.5-4-1.33a6.97 6.97 0 00-1.5 4.33c0 .34.024.673.07 1h10.86z" /></svg>
                     <span>ছাত্র ব্যবস্থাপনা</span>
+                </button>
+                 <button data-view="teachers" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" /></svg>
+                    <span>শিক্ষক ব্যবস্থাপনা</span>
                 </button>
                 <button data-view="classes" class="sidebar-link text-left w-full p-2 rounded-md hover:bg-gray-700 flex items-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 005.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0014.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg>
@@ -427,6 +447,28 @@
                     </div>
                     <div id="studentList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         <p class="text-gray-500 col-span-full">তালিকা দেখতে প্রথমে শিক্ষাবর্ষ ও জামাত নির্বাচন করুন।</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teachers View -->
+            <div id="view-teachers" class="view">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                     <div class="flex flex-col sm:flex-row justify-between items-center border-b pb-3 mb-6 gap-4">
+                         <div class="flex items-center">
+                            <button class="back-to-home-btn p-2 rounded-full hover:bg-gray-200 transition-colors -ml-2">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                            </button>
+                            <h2 class="text-2xl font-bold text-gray-700 ml-2">শিক্ষকদের তালিকা</h2>
+                        </div>
+                        <div class="flex gap-4">
+                            <button id="openAddTeacherModalBtn" class="btn-gradient btn-gradient-green">নতুন শিক্ষক যোগ করুন</button>
+                        </div>
+                    </div>
+                    <div id="teacherList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                        <p class="text-gray-500 col-span-full">কোনো শিক্ষক যোগ করা হয়নি।</p>
                     </div>
                 </div>
             </div>
@@ -801,6 +843,7 @@
             home: document.getElementById('view-home'),
             attendance: document.getElementById('view-attendance'),
             students: document.getElementById('view-students'),
+            teachers: document.getElementById('view-teachers'),
             classes: document.getElementById('view-classes'),
             hems: document.getElementById('view-hems'),
         };
@@ -836,6 +879,9 @@
         const cancelEditBtn = document.getElementById('cancelEditBtn');
         const viewStudentModal = document.getElementById('viewStudentModal');
         const closeViewModalBtn = document.getElementById('closeViewModalBtn');
+        
+        // Teacher Management
+        const openAddTeacherModalBtn = document.getElementById('openAddTeacherModalBtn');
         
         // Cropper Elements
         const cropperModal = document.getElementById('cropperModal');
@@ -1088,6 +1134,14 @@
             editStudentForm.addEventListener('submit', updateStudent);
             
             closeViewModalBtn.addEventListener('click', () => viewStudentModal.style.display = 'none');
+            
+            // Teacher Modals
+            if(openAddTeacherModalBtn) {
+                openAddTeacherModalBtn.addEventListener('click', () => {
+                    // This is a placeholder for the add teacher modal functionality
+                    showToast("এই ফিচারটি শীঘ্রই আসছে।");
+                });
+            }
             
             // Other Listeners
             classSelectForStudent.addEventListener('change', () => loadStudents(academicYearSelectForStudent.value, classSelectForStudent.value));
@@ -1850,7 +1904,7 @@
         const slideshowContainer = document.getElementById('slideshow-container');
         const slideTextElement = document.getElementById('slide-text');
         const welcomeMessages = [
-            "হেদায়াত এক্সাম ম্যানেজমেন্ট সিস্টেমে আপনাকে স্বাগতম",
+            "হাসানিয়া এক্সাম ম্যানেজমেন্ট সিস্টেমে আপনাকে স্বাগতম",
             "আপনার মাদ্রাসাকে ডিজিটাল করুন",
             "ছাত্রদের উপস্থিতি এবং পরীক্ষার ফলাফল পরিচালনা করুন সহজেই",
             "যেকোনো প্রয়োজনে আমাদের সাথে যোগাযোগ করুন"
